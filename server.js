@@ -457,7 +457,7 @@ app.post('/punch-out', requireAuth, requireRole(['intern']), async (req, res) =>
       await db.query('UPDATE tasks SET status = ? WHERE id = ?', [isCompleted ? 'completed' : 'pending', task.id]);
       await db.query(
         `INSERT INTO task_completions (attendance_id, task_id, is_completed) 
-         VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE is_completed = VALUES(is_completed)`,
+         VALUES (?, ?, ?) ON CONFLICT (attendance_id, task_id) DO UPDATE SET is_completed = EXCLUDED.is_completed`,
         [attendanceId, task.id, isCompleted ? 1 : 0]
       );
     }

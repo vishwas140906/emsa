@@ -36,6 +36,7 @@ CREATE TABLE IF NOT EXISTS attendance (
   -- Punch Out Details
   punch_out_time TIMESTAMP NULL,
   incomplete_reason TEXT NULL,
+  hours_worked DECIMAL(5,2) NULL,
   
   -- Status Override (For Admin/TL to override)
   status VARCHAR(50) DEFAULT 'pending_punchout',

@@ -36,6 +36,14 @@ async function getPool() {
       const schemaSql = fs.readFileSync(schemaPath, 'utf8');
       
       await pool.query(schemaSql);
+      
+      // Auto-migrate to add missing columns
+      try {
+        await pool.query("ALTER TABLE attendance ADD COLUMN IF NOT EXISTS hours_worked DECIMAL(5,2) NULL");
+      } catch (err) {
+        console.error("Migration warning (hours_worked):", err.message);
+      }
+      
       console.log('PostgreSQL database connection pool and schema initialized.');
     } catch (error) {
       console.error('Database connection or initialization failed:', error);
