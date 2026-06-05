@@ -1055,3 +1055,10 @@ p.subtitle {
     padding: 1rem;
   }
 }
+
+/* --- Table Responsiveness --- */
+.ent-table-wrapper {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  width: 100%;
+}
