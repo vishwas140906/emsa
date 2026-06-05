@@ -1,0 +1,709 @@
+<%- include('partials/header') %>
+
+<style>
+  /* ===== ENTERPRISE MNC UI OVERRIDES ===== */
+  body {
+    --ent-bg: #f9fafb;
+    --ent-card: #ffffff;
+    --ent-border: #e5e7eb;
+    --ent-text-primary: #111827;
+    --ent-text-secondary: #6b7280;
+    --ent-primary: #0f172a;
+    --ent-primary-hover: #334155;
+    --ent-success: #16a34a;
+    --ent-danger: #dc2626;
+    --ent-radius: 8px;
+    
+    background-color: var(--ent-bg) !important;
+    color: var(--ent-text-primary) !important;
+    -webkit-font-smoothing: antialiased;
+  }
+  
+  h1, h2, h3, h4, h5, h6 { letter-spacing: -0.01em; color: var(--ent-text-primary) !important; }
+
+  /* Override Header from style.css */
+  header { 
+    background: #ffffff !important; 
+    border-bottom: 1px solid var(--ent-border) !important; 
+    box-shadow: none !important; 
+  }
+  .logo { 
+    -webkit-text-fill-color: var(--ent-text-primary) !important; 
+    color: var(--ent-text-primary) !important; 
+  }
+  .user-profile div { color: var(--ent-text-primary) !important; }
+
+  /* Override footer */
+  footer {
+    background: #ffffff !important;
+    border-top: 1px solid var(--ent-border) !important;
+    color: var(--ent-text-secondary) !important;
+  }
+
+  /* Reset container styles imposed by style.css */
+  main.container {
+    padding: 0 !important;
+    margin: 0 !important;
+    max-width: none !important;
+  }
+  
+  .workspace-layout {
+    max-width: 1140px;
+    margin: 2rem auto;
+    padding: 0 1.5rem;
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 1.5rem;
+    align-items: start;
+  }
+
+  @media (max-width: 900px) {
+    .workspace-layout { 
+      grid-template-columns: 1fr; 
+      margin: 1rem auto;
+      padding: 0 1rem;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .ent-card-header {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0.5rem;
+    }
+    .leave-form-grid {
+      grid-template-columns: 1fr !important;
+    }
+    .stat-grid {
+      grid-template-columns: 1fr;
+    }
+    .page-header h1 {
+      font-size: 1.25rem;
+    }
+  }
+
+  /* Enterprise Card */
+  .ent-card {
+    background: var(--ent-card);
+    border: 1px solid var(--ent-border);
+    border-radius: var(--ent-radius);
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    margin-bottom: 1.5rem;
+    overflow: hidden;
+  }
+  .ent-card-header {
+    padding: 1.25rem 1.5rem;
+    border-bottom: 1px solid var(--ent-border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #ffffff;
+  }
+  .ent-card-title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--ent-text-primary);
+    margin: 0;
+  }
+  .ent-card-body {
+    padding: 1.5rem;
+  }
+  .ent-card-footer {
+    padding: 1rem 1.5rem;
+    background: #f9fafb;
+    border-top: 1px solid var(--ent-border);
+    display: flex;
+    justify-content: flex-end;
+  }
+
+  /* Minimalist Greeting */
+  .page-header {
+    grid-column: 1 / -1;
+    margin-bottom: 0.5rem;
+  }
+  .page-header h1 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--ent-text-primary);
+    margin-bottom: 0.25rem;
+  }
+  .page-header p {
+    font-size: 0.875rem;
+    color: var(--ent-text-secondary);
+    margin: 0;
+  }
+
+  /* Enterprise Buttons */
+  .btn-ent {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    border-radius: 6px;
+    border: 1px solid transparent;
+    cursor: pointer;
+    transition: all 0.15s ease-in-out;
+  }
+  .btn-ent-primary {
+    background: var(--ent-primary);
+    color: #ffffff !important;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+  }
+  .btn-ent-primary:hover { background: var(--ent-primary-hover); }
+  
+  .btn-ent-success { background: var(--ent-success); color: #ffffff !important; }
+  .btn-ent-success:hover { background: #15803d; }
+  
+  .btn-ent-danger { background: var(--ent-danger); color: #ffffff !important; }
+  .btn-ent-danger:hover { background: #b91c1c; }
+
+  .btn-ent-outline {
+    background: #ffffff;
+    border: 1px solid #d1d5db;
+    color: var(--ent-text-primary);
+    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+  }
+  .btn-ent-outline:hover { background: #f9fafb; }
+
+  /* Forms & Inputs */
+  .ent-label {
+    display: block;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #374151;
+    margin-bottom: 0.375rem;
+  }
+  .ent-input {
+    width: 100%;
+    padding: 0.5rem 0.75rem;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    font-size: 0.875rem;
+    color: var(--ent-text-primary);
+    background: #ffffff;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+    transition: border-color 0.15s, box-shadow 0.15s;
+  }
+  .ent-input:focus {
+    outline: none;
+    border-color: #6366f1;
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+  }
+  
+  /* Camera Zone */
+  .cam-wrapper {
+    position: relative;
+    width: 100%;
+    border-radius: 6px;
+    overflow: hidden;
+    border: 1px solid var(--ent-border);
+    background: #000;
+    aspect-ratio: 16/9;
+  }
+  .cam-wrapper video, .cam-wrapper canvas {
+    width: 100%; height: 100%; object-fit: cover; transform: scaleX(-1); display: block;
+  }
+  .cam-wrapper canvas { transform: scaleX(1); display: none; }
+  .cam-status {
+    position: absolute; bottom: 0; left: 0; right: 0;
+    padding: 0.5rem 0.75rem;
+    background: rgba(0,0,0,0.6);
+    color: #ffffff;
+    font-size: 0.75rem;
+    font-weight: 500;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+
+  /* Tasks List */
+  .ent-task-list {
+    border: 1px solid var(--ent-border);
+    border-radius: 6px;
+    overflow: hidden;
+  }
+  .ent-task-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid var(--ent-border);
+    background: #ffffff;
+  }
+  .ent-task-item:last-child { border-bottom: none; }
+  
+  .ent-checkbox {
+    width: 1rem; height: 1rem;
+    border-radius: 4px;
+    border: 1px solid #d1d5db;
+    cursor: pointer;
+    accent-color: var(--ent-primary);
+  }
+  
+  .ent-task-text { font-size: 0.875rem; color: var(--ent-text-primary); }
+  .ent-task-text.done { text-decoration: line-through; color: var(--ent-text-secondary); }
+  
+  .ent-badge {
+    display: inline-flex; align-items: center;
+    padding: 0.125rem 0.5rem;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 500;
+  }
+  .badge-gray { background: #f3f4f6; color: #374151 !important; }
+  .badge-green { background: #dcfce7; color: #166534 !important; }
+  .badge-amber { background: #fef3c7; color: #92400e !important; }
+  .badge-red { background: #fee2e2; color: #991b1b !important; }
+
+  /* Calendar */
+  .ent-calendar {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 1px;
+    background: var(--ent-border);
+    border: 1px solid var(--ent-border);
+    border-radius: 6px;
+    overflow: hidden;
+  }
+  .ent-cal-header {
+    background: #f9fafb;
+    padding: 0.5rem 0;
+    text-align: center;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--ent-text-secondary);
+  }
+  .ent-cal-day {
+    background: #ffffff;
+    aspect-ratio: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--ent-text-primary);
+  }
+  .ent-cal-day.empty { background: #f9fafb; }
+  .ent-cal-day.blocked { background: #e5e7eb; color: #9ca3af !important; cursor: not-allowed; }
+  .ent-cal-day.present { background: #dcfce7; color: #166534 !important; font-weight: 600;}
+  .ent-cal-day.absent { background: #fee2e2; color: #991b1b !important; font-weight: 600;}
+  .ent-cal-day.half_day { background: #fef3c7; color: #92400e !important; font-weight: 600;}
+  .ent-cal-day.leave { background: #fee2e2; color: #991b1b !important; font-weight: 600;}
+  .ent-cal-day.holiday { color: #9ca3af !important; }
+  .ent-cal-day.today { box-shadow: inset 0 0 0 2px var(--ent-primary); }
+
+  /* Stat Box */
+  .stat-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1px;
+    background: var(--ent-border);
+    border: 1px solid var(--ent-border);
+    border-radius: var(--ent-radius);
+    overflow: hidden;
+  }
+  .stat-box {
+    background: #ffffff;
+    padding: 1.25rem;
+  }
+  .stat-val { font-size: 1.5rem; font-weight: 600; color: var(--ent-text-primary); line-height: 1; margin-bottom: 0.25rem;}
+  .stat-lbl { font-size: 0.75rem; font-weight: 500; color: var(--ent-text-secondary); }
+
+  /* Alerts */
+  .ent-alert {
+    padding: 0.75rem 1rem;
+    border-radius: 6px;
+    margin-bottom: 1.5rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    display: flex; align-items: center; gap: 0.5rem;
+  }
+  .ent-alert-success { background: #f0fdf4; border: 1px solid #bbf7d0; color: #166534 !important; }
+  .ent-alert-error { background: #fef2f2; border: 1px solid #fecaca; color: #991b1b !important; }
+</style>
+  
+<div class="workspace-layout">
+  <div class="page-header">
+    <h1>Dashboard</h1>
+    <p>Welcome back, <%= typeof user !== 'undefined' ? user.name : 'Employee' %>. Here is your overview for <%= new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }) %>.</p>
+  </div>
+
+  <% if (success) { %>
+    <div class="ent-alert ent-alert-success" style="grid-column: 1 / -1;">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+      <%= success %>
+    </div>
+  <% } %>
+  <% if (error) { %>
+    <div class="ent-alert ent-alert-error" style="grid-column: 1 / -1;">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+      <%= error %>
+    </div>
+  <% } %>
+
+  <!-- LEFT COLUMN: Main Actions -->
+  <div class="main-column">
+    
+    <!-- PUNCH IN / OUT SECTION -->
+    <% if (punchState === 'punch_in') { %>
+      <div class="ent-card">
+        <div class="ent-card-header">
+          <h2 class="ent-card-title">Attendance Logging</h2>
+        </div>
+        <div class="ent-card-body">
+          <p style="font-size: 0.875rem; color: var(--ent-text-secondary); margin-bottom: 1rem;">
+            Capture your biometric verification and precise location to clock in for the day.
+          </p>
+          <form id="punchInForm" action="/punch-in" method="POST">
+            <input type="hidden" name="photo" id="photoData">
+            <input type="hidden" name="latitude" id="latData">
+            <input type="hidden" name="longitude" id="lngData">
+            
+            <div class="cam-wrapper">
+              <video id="cameraStream" autoplay playsinline muted></video>
+              <canvas id="cameraCanvas"></canvas>
+              <div class="cam-status">
+                <span id="locBadge">Acquiring GPS coordinates...</span>
+                <span id="timeDisplay"></span>
+              </div>
+            </div>
+          </form>
+        </div>
+        <div class="ent-card-footer">
+          <button type="button" id="capturePunchIn" class="btn-ent btn-ent-success" onclick="captureAndPunchIn()">
+            Clock In Now
+          </button>
+        </div>
+      </div>
+
+    <% } else if (punchState === 'punch_out') { %>
+      <div class="ent-card">
+        <div class="ent-card-header">
+          <h2 class="ent-card-title">Daily Wrap-up</h2>
+        </div>
+        
+        <form action="/punch-out" method="POST" id="punchOutForm">
+          <div class="ent-card-body">
+            <div style="display: flex; gap: 1rem; margin-bottom: 1.5rem;">
+              <div>
+                <div class="ent-label">Clocked In At</div>
+                <div style="font-size: 0.875rem; font-weight: 500;"><%= new Date(attendanceToday.punch_in_time).toLocaleTimeString('en-US', {hour:'2-digit', minute:'2-digit'}) %></div>
+              </div>
+              <div style="border-left: 1px solid var(--ent-border); padding-left: 1rem;">
+                <div class="ent-label">Current Session Time</div>
+                <div style="font-size: 0.875rem; font-weight: 500;" id="sessionTime">Calculating...</div>
+              </div>
+            </div>
+
+            <div class="ent-label" style="margin-bottom: 0.5rem;">Task Checklist</div>
+            <% if (tasksToday.length > 0) { %>
+              <div class="ent-task-list" id="taskList" style="margin-bottom: 1rem;">
+                <% tasksToday.forEach(function(task) { %>
+                  <div class="ent-task-item">
+                    <input type="checkbox" class="ent-checkbox" name="completed_tasks[]" value="<%= task.id %>"
+                      <%= task.status === 'completed' ? 'checked' : '' %> onchange="toggleReasonBox()">
+                    <span class="ent-task-text"><%= task.task_description %></span>
+                  </div>
+                <% }) %>
+              </div>
+
+              <div id="reasonBox" style="display: none;">
+                <label class="ent-label" style="color: var(--ent-danger);">Reason for pending tasks</label>
+                <textarea name="incomplete_reason" class="ent-input" placeholder="Provide a brief explanation for unfinished work..."></textarea>
+              </div>
+            <% } else { %>
+              <div style="padding: 1rem; background: #f9fafb; border-radius: 6px; border: 1px solid var(--ent-border); font-size: 0.875rem; color: var(--ent-text-secondary);">
+                No tasks were assigned for today's session.
+              </div>
+            <% } %>
+          </div>
+          
+          <div class="ent-card-footer">
+            <button type="submit" class="btn-ent btn-ent-danger">
+              End Work Day
+            </button>
+          </div>
+        </form>
+      </div>
+
+    <% } else { %>
+      <div class="ent-card">
+        <div class="ent-card-body" style="text-align: center; padding: 3rem 1.5rem;">
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="1.5" style="margin-bottom: 1rem;">
+            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+            <polyline points="22 4 12 14.01 9 11.01"></polyline>
+          </svg>
+          <h2 style="font-size: 1.125rem; font-weight: 600; margin-bottom: 0.5rem;">Shift Completed</h2>
+          <p style="font-size: 0.875rem; color: var(--ent-text-secondary);">Your attendance and logs for today have been successfully recorded.</p>
+          
+          <div style="display: inline-flex; align-items: center; gap: 1.5rem; margin-top: 1.5rem; padding: 1rem; background: #f9fafb; border-radius: 8px; border: 1px solid var(--ent-border);">
+            <div>
+              <div class="ent-label" style="margin-bottom: 0.25rem;">Clock In</div>
+              <div style="font-size: 0.875rem; font-weight: 500;"><%= new Date(attendanceToday.punch_in_time).toLocaleTimeString('en-US', {hour:'2-digit', minute:'2-digit'}) %></div>
+            </div>
+            <div style="width: 1px; height: 30px; background: var(--ent-border);"></div>
+            <div>
+              <div class="ent-label" style="margin-bottom: 0.25rem;">Clock Out</div>
+              <div style="font-size: 0.875rem; font-weight: 500;"><%= new Date(attendanceToday.punch_out_time).toLocaleTimeString('en-US', {hour:'2-digit', minute:'2-digit'}) %></div>
+            </div>
+            <% if (attendanceToday.hours_worked) { %>
+            <div style="width: 1px; height: 30px; background: var(--ent-border);"></div>
+            <div>
+              <div class="ent-label" style="margin-bottom: 0.25rem;">Hours</div>
+              <div style="font-size: 0.875rem; font-weight: 500;"><%= parseFloat(attendanceToday.hours_worked).toFixed(2) %></div>
+            </div>
+            <% } %>
+          </div>
+        </div>
+      </div>
+    <% } %>
+
+    <!-- LEAVE REQUESTS -->
+    <div class="ent-card">
+      <div class="ent-card-header">
+        <h2 class="ent-card-title">Leave Management</h2>
+      </div>
+      <div class="ent-card-body">
+        <form action="/apply-leave" method="POST" style="margin-bottom: 2rem;">
+          <div class="leave-form-grid" style="display: grid; grid-template-columns: 1fr 2fr; gap: 1rem; align-items: start;">
+            <div>
+              <label class="ent-label">Date of Leave</label>
+              <input type="date" name="leave_date" class="ent-input" required min="<%= new Date().toISOString().split('T')[0] %>">
+            </div>
+            <div>
+              <label class="ent-label">Reason</label>
+              <input type="text" name="reason" class="ent-input" placeholder="e.g. Medical, Personal..." required>
+            </div>
+          </div>
+          <div style="margin-top: 1rem;">
+            <button type="submit" class="btn-ent btn-ent-outline">Submit Request</button>
+          </div>
+        </form>
+
+        <% if (leaveRequests && leaveRequests.length > 0) { %>
+          <div class="ent-label" style="margin-bottom: 0.5rem; border-top: 1px solid var(--ent-border); padding-top: 1.5rem;">Recent Applications</div>
+          <div class="ent-task-list">
+            <% leaveRequests.forEach(function(lr) { %>
+              <div class="ent-task-item" style="justify-content: space-between;">
+                <div>
+                  <div style="font-size: 0.875rem; font-weight: 500;"><%= lr.leave_date_str || new Date(lr.leave_date).toISOString().split('T')[0] %></div>
+                  <div style="font-size: 0.75rem; color: var(--ent-text-secondary);"><%= lr.reason %></div>
+                </div>
+                <span class="ent-badge 
+                  <%= lr.status === 'approved' ? 'badge-green' : (lr.status === 'rejected' ? 'badge-red' : 'badge-amber') %>">
+                  <%= lr.status.charAt(0).toUpperCase() + lr.status.slice(1) %>
+                </span>
+              </div>
+            <% }) %>
+          </div>
+        <% } %>
+      </div>
+    </div>
+  </div>
+
+  <!-- RIGHT COLUMN: Sidebar Stats -->
+  <div class="sidebar-column">
+    
+    <!-- QUICK STATS -->
+    <div class="stat-grid" style="margin-bottom: 1.5rem;">
+      <div class="stat-box">
+        <div class="stat-val"><%= currentStreak %></div>
+        <div class="stat-lbl">Day Streak</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-val"><%= pendingTasksCount %></div>
+        <div class="stat-lbl">Pending Tasks</div>
+      </div>
+    </div>
+
+    <!-- TODAY'S TASKS OVERVIEW -->
+    <div class="ent-card">
+      <div class="ent-card-header">
+        <h2 class="ent-card-title">Tasks Overview</h2>
+      </div>
+      <div class="ent-card-body" style="padding: 0;">
+        <% if (tasksToday.length > 0) { %>
+          <div class="ent-task-list" style="border: none; border-radius: 0;">
+            <% tasksToday.forEach(function(task) { %>
+              <div class="ent-task-item">
+                <div style="flex: 1; min-width: 0;">
+                  <div class="ent-task-text <%= task.status === 'completed' ? 'done' : '' %>" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><%= task.task_description %></div>
+                </div>
+                <span class="ent-badge <%= task.status === 'completed' ? 'badge-green' : 'badge-amber' %>"><%= task.status === 'completed' ? 'Done' : 'Pending' %></span>
+              </div>
+            <% }) %>
+          </div>
+        <% } else { %>
+          <div style="padding: 1.5rem; text-align: center; font-size: 0.875rem; color: var(--ent-text-secondary);">
+            No tasks assigned today.
+          </div>
+        <% } %>
+      </div>
+    </div>
+
+    <!-- CALENDAR -->
+    <div class="ent-card">
+      <div class="ent-card-header">
+        <h2 class="ent-card-title">Attendance Calendar</h2>
+        <span style="font-size: 0.75rem; color: var(--ent-text-secondary);"><%= new Date().toLocaleDateString('en-US', { month: 'short', year: 'numeric' }) %></span>
+      </div>
+      <div class="ent-card-body" style="padding: 1rem;">
+        <div class="ent-calendar">
+          <div class="ent-cal-header">M</div>
+          <div class="ent-cal-header">T</div>
+          <div class="ent-cal-header">W</div>
+          <div class="ent-cal-header">T</div>
+          <div class="ent-cal-header">F</div>
+          <div class="ent-cal-header">S</div>
+          <div class="ent-cal-header">S</div>
+          
+          <% 
+            const todayDateStr = new Date().toISOString().split('T')[0];
+            calendarDays.forEach(function(day) { 
+              let cellClass = '';
+              if (day.type === 'empty') {
+                cellClass = 'empty';
+              } else if (day.type === 'blocked') {
+                cellClass = 'blocked';
+              } else if (day.type === 'attendance' && day.record) {
+                if (day.record.status === 'present') cellClass = 'present';
+                else if (day.record.status === 'absent') cellClass = 'absent';
+                else if (day.record.status === 'half_day') cellClass = 'half_day';
+                else if (day.record.status === 'leave') cellClass = 'leave';
+                else cellClass = 'present'; 
+              } else if (day.type === 'holiday') {
+                cellClass = 'holiday';
+              } else if (day.type === 'unpunched_past') {
+                cellClass = 'absent';
+              } else if (day.type === 'pending_punchin') {
+                cellClass = 'holiday';
+              } else {
+                cellClass = 'empty';
+              }
+              const isToday = day.date === todayDateStr;
+          %>
+            <div class="ent-cal-day <%= cellClass %> <%= isToday ? 'today' : '' %>" title="<%= day.date %>">
+              <% if (day.type !== 'empty') { %>
+                <%= day.dayNum %>
+              <% } %>
+            </div>
+          <% }) %>
+        </div>
+        
+        <div style="display: flex; justify-content: space-between; margin-top: 1rem; font-size: 0.75rem; color: var(--ent-text-secondary);">
+          <div style="display: flex; align-items: center; gap: 0.375rem;"><div style="width:8px; height:8px; border-radius:2px; background:var(--ent-success);"></div> Present</div>
+          <div style="display: flex; align-items: center; gap: 0.375rem;"><div style="width:8px; height:8px; border-radius:2px; background:var(--ent-warning);"></div> Half Day</div>
+          <div style="display: flex; align-items: center; gap: 0.375rem;"><div style="width:8px; height:8px; border-radius:2px; background:var(--ent-danger);"></div> Leave/Absent</div>
+          <div style="display: flex; align-items: center; gap: 0.375rem;"><div style="width:8px; height:8px; border-radius:2px; background:#f9fafb; border:1px solid var(--ent-border);"></div> Unscheduled</div>
+        </div>
+      </div>
+    </div>
+    
+  </div>
+</div>
+
+<script>
+  // System Clock
+  setInterval(() => {
+    const now = new Date();
+    const el = document.getElementById('timeDisplay');
+    if(el) el.innerText = now.toLocaleTimeString();
+  }, 1000);
+
+  // Session Timer Logic (if punched in)
+  <% if (attendanceToday && punchState === 'punch_out') { %>
+    const punchInTime = new Date("<%= attendanceToday.punch_in_time %>").getTime();
+    setInterval(() => {
+      const now = new Date().getTime();
+      const diff = now - punchInTime;
+      const hrs = Math.floor(diff / (1000 * 60 * 60));
+      const mins = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+      const secs = Math.floor((diff % (1000 * 60)) / 1000);
+      const el = document.getElementById('sessionTime');
+      if(el) el.innerText = `${hrs}h ${mins}m ${secs}s`;
+    }, 1000);
+  <% } %>
+
+  // ===== CAMERA & GEO LOGIC =====
+  let stream = null;
+
+  async function initCamera() {
+    const video = document.getElementById('cameraStream');
+    if (!video) return;
+    try {
+      stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' }, audio: false });
+      video.srcObject = stream;
+    } catch (e) {
+      console.error('Camera access denied:', e);
+      document.getElementById('locBadge').innerText = 'Camera access denied. Please allow permissions.';
+    }
+  }
+
+  function fetchLocation() {
+    if (!navigator.geolocation) return;
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        document.getElementById('latData').value = pos.coords.latitude;
+        document.getElementById('lngData').value = pos.coords.longitude;
+        document.getElementById('locBadge').innerText = 
+          `GPS: ${pos.coords.latitude.toFixed(4)}, ${pos.coords.longitude.toFixed(4)}`;
+      },
+      () => {
+        document.getElementById('locBadge').innerText = 'Location unavailable. Please allow GPS.';
+      },
+      { enableHighAccuracy: true }
+    );
+  }
+
+  function captureAndPunchIn() {
+    const video = document.getElementById('cameraStream');
+    const canvas = document.getElementById('cameraCanvas');
+    if (!video || !canvas) return;
+
+    canvas.width = video.videoWidth || 640;
+    canvas.height = video.videoHeight || 480;
+    
+    const ctx = canvas.getContext('2d');
+    ctx.translate(canvas.width, 0);
+    ctx.scale(-1, 1);
+    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+    
+    const dataUrl = canvas.toDataURL('image/jpeg', 0.8);
+    document.getElementById('photoData').value = dataUrl;
+
+    if (stream) stream.getTracks().forEach(t => t.stop());
+
+    canvas.style.display = 'block';
+    video.style.display = 'none';
+    
+    const btn = document.getElementById('capturePunchIn');
+    btn.innerText = 'Processing...';
+    btn.disabled = true;
+    btn.style.opacity = '0.7';
+
+    document.getElementById('punchInForm').submit();
+  }
+
+  function toggleReasonBox() {
+    const taskList = document.getElementById('taskList');
+    const reasonBox = document.getElementById('reasonBox');
+    if (!taskList || !reasonBox) return;
+    
+    const checkboxes = taskList.querySelectorAll('input[type="checkbox"]');
+    const total = checkboxes.length;
+    const checked = Array.from(checkboxes).filter(c => c.checked).length;
+    
+    reasonBox.style.display = (checked < total) ? 'block' : 'none';
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    if (document.getElementById('cameraStream')) {
+      initCamera();
+      fetchLocation();
+    }
+    toggleReasonBox();
+  });
+</script>
+
+<%- include('partials/footer') %>
