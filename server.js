@@ -711,6 +711,24 @@ app.post('/tl/update-attendance', requireAuth, requireRole(['founder', 'tl']), a
 });
 
 // TL: Approve or Reject Leave Request
+// TL: API to get pending leaves for real-time dashboard updates
+app.get('/tl/api/leaves', requireAuth, requireRole(['founder', 'tl']), async (req, res) => {
+  try {
+    const pendingLeaves = await db.query(
+      `SELECT lr.id, lr.leave_date, lr.reason, lr.status, lr.created_at,
+              u.name AS employee_name, u.email AS employee_email
+       FROM leave_requests lr
+       INNER JOIN users u ON lr.user_id = u.id
+       WHERE lr.status = 'pending'
+       ORDER BY lr.leave_date ASC`
+    );
+    res.json({ success: true, pendingLeaves });
+  } catch (err) {
+    console.error('API Error fetching leaves:', err);
+    res.status(500).json({ success: false, error: 'Failed to fetch leaves' });
+  }
+});
+
 app.post('/tl/review-leave', requireAuth, requireRole(['founder', 'tl']), async (req, res) => {
   const { leave_id, action, review_notes } = req.body;
   const reviewerId = req.session.user.id;

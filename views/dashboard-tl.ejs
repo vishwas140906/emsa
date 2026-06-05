@@ -505,9 +505,9 @@
           <div class="ent-table-wrapper">
             <table class="ent-table">
               <thead><tr><th>Employee</th><th>Date</th><th>Reason</th><th>Action / Status</th></tr></thead>
-              <tbody>
+              <tbody id="leavesTableBody">
                 <% pendingLeavesList.forEach(leave => { %>
-                  <tr style="background: #fffbeb;">
+                  <tr style="background: #fffbeb;" class="pending-leave-row" data-id="<%= leave.id %>">
                     <td><div style="font-weight: 500;"><%= leave.employee_name %></div></td>
                     <td style="white-space: nowrap;"><%= new Date(leave.leave_date).toLocaleDateString('en-US', {month: 'short', day: 'numeric'}) %></td>
                     <td><%= leave.reason %></td>
@@ -668,6 +668,67 @@
     if (event.target == overrideModal) { closeOverrideModal(); }
     if (event.target == addEmployeeModal) { closeAddEmployeeModal(); }
   }
+
+  // Real-time Leave Requests Polling
+  let knownPendingCount = <%= typeof pendingLeavesList !== 'undefined' ? pendingLeavesList.length : 0 %>;
+  
+  setInterval(async () => {
+    try {
+      const res = await fetch('/tl/api/leaves');
+      const data = await res.json();
+      if (data.success && data.pendingLeaves) {
+        const currentPendingCount = data.pendingLeaves.length;
+        
+        // If a new leave request arrived
+        if (currentPendingCount > knownPendingCount) {
+          knownPendingCount = currentPendingCount;
+          
+          // If we are on the reminders tab, dynamically update the table
+          const tbody = document.getElementById('leavesTableBody');
+          if (tbody) {
+            // Re-render pending leaves at the top
+            let newRows = '';
+            data.pendingLeaves.forEach(leave => {
+              const d = new Date(leave.leave_date).toLocaleDateString('en-US', {month: 'short', day: 'numeric'});
+              newRows += `
+                <tr style="background: #fffbeb;" class="pending-leave-row" data-id="${leave.id}">
+                  <td><div style="font-weight: 500;">${leave.employee_name}</div></td>
+                  <td style="white-space: nowrap;">${d}</td>
+                  <td>${leave.reason}</td>
+                  <td>
+                    <div style="display: flex; gap: 0.5rem;">
+                      <form action="/tl/review-leave" method="POST"><input type="hidden" name="leave_id" value="${leave.id}"><input type="hidden" name="action" value="approved"><button type="submit" class="btn-ent btn-ent-success btn-sm">Approve</button></form>
+                      <form action="/tl/review-leave" method="POST"><input type="hidden" name="leave_id" value="${leave.id}"><input type="hidden" name="action" value="rejected"><button type="submit" class="btn-ent btn-ent-danger btn-sm">Reject</button></form>
+                    </div>
+                  </td>
+                </tr>
+              `;
+            });
+            
+            // Remove old pending rows
+            document.querySelectorAll('.pending-leave-row').forEach(row => row.remove());
+            
+            // Insert new rows at the top
+            tbody.insertAdjacentHTML('afterbegin', newRows);
+            
+            // Optionally alert the TL
+            // alert('New Leave Request Received!');
+          } else {
+            // Not on reminders tab, show a small visual indicator or alert
+            const tabEl = document.querySelector('a[href="/tl/dashboard?tab=reminders"]');
+            if(tabEl && !tabEl.innerText.includes('New')) {
+              tabEl.innerHTML += ' <span style="background:var(--ent-danger); color:white; padding:2px 6px; border-radius:10px; font-size:0.7rem;">New</span>';
+            }
+          }
+        } else if (currentPendingCount < knownPendingCount) {
+             knownPendingCount = currentPendingCount; // Someone else reviewed it
+        }
+      }
+    } catch (err) {
+      console.error('Polling error', err);
+    }
+  }, 10000); // Poll every 10 seconds
+
 </script>
 
 <%- include('partials/footer') %>
