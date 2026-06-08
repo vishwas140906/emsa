@@ -1,0 +1,16 @@
+{
+  "name": "Employee Management System",
+  "short_name": "EMS",
+  "description": "Employee Management System PWA",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#4a90e2",
+  "icons": [
+    {
+      "src": "/icons/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}

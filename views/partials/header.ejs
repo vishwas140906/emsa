@@ -5,32 +5,263 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>EMS - Employee Management System</title>
   <link rel="stylesheet" href="/css/style.css">
+  <link rel="manifest" href="/manifest.json">
+  <script src="/js/pwa.js" defer></script>
+  <meta name="theme-color" content="#4a90e2">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
-  <header>
-    <div class="nav-container">
-      <a href="/" class="logo">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="stroke: currentColor; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round;">
-          <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
-          <circle cx="9" cy="7" r="4" />
-          <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
-          <path d="M16 3.13a4 4 0 0 1 0 7.75" />
-        </svg>
-        EMS Workspace
-      </a>
-      
-      <% if (locals.user) { %>
-        <div class="user-nav-info">
-          <div class="user-profile">
-            <span class="avatar"><%= user.name.charAt(0).toUpperCase() %></span>
-            <div>
-              <div style="font-weight: 600; font-size: 0.95rem;"><%= user.name %></div>
-              <span class="role-badge role-<%= user.role %>"><%= user.role %></span>
+  <% if (locals.user) { %>
+    <div class="app-layout">
+      <!-- SIDEBAR -->
+      <aside class="sidebar">
+        <div class="sidebar-header">
+          <a href="/" class="sidebar-logo">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="stroke: currentColor; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round;">
+              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+              <circle cx="9" cy="7" r="4" />
+              <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+              <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+            </svg>
+            EMS Workspace
+          </a>
+          <button class="mobile-sidebar-close" onclick="toggleSidebar()" aria-label="Close Sidebar">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+          </button>
+        </div>
+        
+        <nav class="sidebar-nav">
+          <% if (['founder', 'tl'].includes(user.role)) { %>
+            <a href="/tl/dashboard?tab=presence" class="sidebar-link <%= (locals.activeTab === 'presence' || !locals.activeTab) ? 'active' : '' %>">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+              Daily Presence
+            </a>
+            <a href="/tl/dashboard?tab=tasks" class="sidebar-link <%= locals.activeTab === 'tasks' ? 'active' : '' %>">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
+              Task Logs
+            </a>
+            <a href="/tl/dashboard?tab=streaks" class="sidebar-link <%= locals.activeTab === 'streaks' ? 'active' : '' %>">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
+              Employee Streaks
+            </a>
+            <a href="/tl/dashboard?tab=reminders" class="sidebar-link <%= locals.activeTab === 'reminders' ? 'active' : '' %>">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+              Warnings & Reminders
+            </a>
+            <a href="/tl/dashboard?tab=team" class="sidebar-link <%= locals.activeTab === 'team' ? 'active' : '' %>">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+              Team Management
+            </a>
+          <% } else { %>
+            <a href="/dashboard" class="sidebar-link active">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+              Dashboard
+            </a>
+          <% } %>
+        </nav>
+        
+        <div class="sidebar-footer">
+          <div class="sidebar-user-card" onclick="toggleProfileDropdown(event)">
+            <div class="sidebar-avatar-wrapper">
+              <span class="avatar" style="width: 36px; height: 36px; font-size: 0.9rem; background: var(--ent-primary); border: 2px solid rgba(255,255,255,0.1);"><%= user.name.charAt(0).toUpperCase() %></span>
+              <div class="online-indicator"></div>
+            </div>
+            <div class="user-details">
+              <div class="user-name"><%= user.name %></div>
+              <div class="user-role">
+                <% if (user.role === 'admin') { %>Admin<% } else if (user.role === 'founder') { %><%= user.name.toLowerCase().includes('vishwas') ? 'Co-Founder' : 'Founder' %><% } else if (user.role === 'tl') { %>Team Lead<% } else { %>Intern<% } %>
+              </div>
             </div>
           </div>
-          <a href="/logout" class="btn-logout">Logout</a>
+          
+          <div class="profile-dropdown-menu" id="profileDropdown">
+            <a href="#" class="profile-menu-item" onclick="openProfileModal(event)">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+              My Profile
+            </a>
+            <a href="#" class="profile-menu-item" onclick="openHistoryModal(event)">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
+              Attendance History
+            </a>
+            <a href="#" class="profile-menu-item">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+              Settings
+            </a>
+            <div class="profile-menu-divider"></div>
+            <a href="/logout" class="profile-menu-item danger">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+              Logout
+            </a>
+          </div>
         </div>
-      <% } %>
-    </div>
-  </header>
-  <main class="container">
+      </aside>
+
+      <!-- MAIN CONTENT WRAPPER -->
+      <div class="mobile-overlay" onclick="toggleSidebar()"></div>
+      <div class="main-wrapper">
+        <header class="top-header">
+          <div style="display: flex; align-items: center; gap: 1rem;">
+            <button class="mobile-menu-btn" onclick="toggleSidebar()" aria-label="Toggle Menu">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+            </button>
+            <span class="mobile-header-title" style="display: none; font-weight: 700; color: var(--text-main); font-size: 1.1rem;">EMS</span>
+          </div>
+          <div class="user-nav-info" style="display: flex; align-items: center;">
+            <a href="/logout" class="btn-logout" style="display: flex; align-items: center; gap: 0.5rem; color: var(--text-muted); text-decoration: none; font-size: 0.85rem; font-weight: 500; border: 1px solid var(--border-light); padding: 0.4rem 0.75rem; border-radius: var(--radius-sm); transition: all 0.2s;">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+              Logout
+            </a>
+          </div>
+        </header>
+        <main class="main-content">
+          
+        <!-- My Profile Modal -->
+        <div id="profileModal" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center; backdrop-filter: blur(4px);">
+          <div style="background: var(--bg-secondary); border-radius: var(--radius-md); padding: 2rem; width: 100%; max-width: 400px; box-shadow: var(--shadow-lg); border: 1px solid var(--border-light); position: relative;">
+            <button onclick="closeProfileModal()" style="position: absolute; top: 1rem; right: 1rem; background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--text-muted);">&times;</button>
+            <div style="text-align: center; margin-bottom: 1.5rem;">
+              <span class="avatar" style="width: 80px; height: 80px; font-size: 2.5rem; background: var(--ent-primary); color: white; display: inline-flex; align-items: center; justify-content: center; border-radius: 50%;"><%= user.name.charAt(0).toUpperCase() %></span>
+            </div>
+            <h2 style="text-align: center; font-size: 1.5rem; margin-bottom: 0.25rem; color: var(--text-main);"><%= user.name %></h2>
+            <p style="text-align: center; font-size: 0.9rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600; margin-bottom: 1.5rem;"><%= user.role === 'admin' ? 'Admin' : user.role === 'founder' ? (user.name.toLowerCase().includes('vishwas') ? 'Co-Founder' : 'Founder') : user.role === 'tl' ? 'Team Lead' : 'Intern' %></p>
+            
+            <div style="background: var(--bg-tertiary); border-radius: var(--radius-sm); padding: 1rem; border: 1px solid var(--border-light);">
+              <div style="display: flex; justify-content: space-between; margin-bottom: 0.75rem;">
+                <span style="color: var(--text-muted); font-weight: 500; font-size: 0.85rem;">Employee ID</span>
+                <span style="color: var(--text-main); font-weight: 600; font-size: 0.85rem;"><%= user.employee_id || `EMP-${user.id}` %></span>
+              </div>
+              <div style="display: flex; justify-content: space-between; margin-bottom: 0.75rem;">
+                <span style="color: var(--text-muted); font-weight: 500; font-size: 0.85rem;">Email Address</span>
+                <span style="color: var(--text-main); font-weight: 600; font-size: 0.85rem;"><%= user.email %></span>
+              </div>
+              <div style="display: flex; justify-content: space-between;">
+                <span style="color: var(--text-muted); font-weight: 500; font-size: 0.85rem;">Joined Date</span>
+                <span style="color: var(--text-main); font-weight: 600; font-size: 0.85rem;"><%= user.onboarding_date ? new Date(user.onboarding_date).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }) : 'N/A' %></span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Attendance History Modal -->
+        <div id="historyModal" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center; backdrop-filter: blur(4px);">
+          <div style="background: var(--bg-secondary); border-radius: var(--radius-md); padding: 1.5rem; width: 100%; max-width: 600px; box-shadow: var(--shadow-lg); border: 1px solid var(--border-light); position: relative; max-height: 90vh; display: flex; flex-direction: column;">
+            <button onclick="closeHistoryModal()" style="position: absolute; top: 1rem; right: 1rem; background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--text-muted);">&times;</button>
+            <h2 style="font-size: 1.25rem; font-weight: 600; margin-bottom: 1rem; color: var(--text-main);">My Attendance History</h2>
+            
+            <div style="overflow-y: auto; flex: 1; border: 1px solid var(--border-light); border-radius: var(--radius-sm);">
+              <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.85rem;">
+                <thead style="background: var(--bg-tertiary); position: sticky; top: 0;">
+                  <tr>
+                    <th style="padding: 0.75rem 1rem; color: var(--text-muted); font-weight: 600; border-bottom: 1px solid var(--border-light);">Date</th>
+                    <th style="padding: 0.75rem 1rem; color: var(--text-muted); font-weight: 600; border-bottom: 1px solid var(--border-light);">Status</th>
+                    <th style="padding: 0.75rem 1rem; color: var(--text-muted); font-weight: 600; border-bottom: 1px solid var(--border-light);">Punch In</th>
+                    <th style="padding: 0.75rem 1rem; color: var(--text-muted); font-weight: 600; border-bottom: 1px solid var(--border-light);">Punch Out</th>
+                    <th style="padding: 0.75rem 1rem; color: var(--text-muted); font-weight: 600; border-bottom: 1px solid var(--border-light);">Hours</th>
+                  </tr>
+                </thead>
+                <tbody id="historyTableBody">
+                  <tr><td colspan="5" style="padding: 2rem; text-align: center; color: var(--text-muted);">Loading history...</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+        
+  <% } else { %>
+    <!-- Public / Auth Header -->
+    <header>
+      <div class="nav-container">
+        <a href="/" class="logo">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="stroke: currentColor; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round;">
+            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+            <circle cx="9" cy="7" r="4" />
+            <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+            <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+          </svg>
+          EMS Workspace
+        </a>
+      </div>
+    </header>
+    <main class="container">
+  <% } %>
+
+  <!-- Hamburger Menu Script -->
+  <script>
+    function toggleSidebar() {
+      document.body.classList.toggle('sidebar-open');
+    }
+    
+    function toggleProfileDropdown(e) {
+      e.stopPropagation();
+      document.getElementById('profileDropdown').classList.toggle('show');
+    }
+    
+    // Close dropdown when clicking outside
+    document.addEventListener('click', function(e) {
+      const dropdown = document.getElementById('profileDropdown');
+      if (dropdown && dropdown.classList.contains('show') && !e.target.closest('.sidebar-footer')) {
+        dropdown.classList.remove('show');
+      }
+    });
+
+    // Profile Modal Logic
+    function openProfileModal(e) {
+      e.preventDefault();
+      document.getElementById('profileDropdown').classList.remove('show');
+      const modal = document.getElementById('profileModal');
+      modal.style.display = 'flex';
+      // tiny timeout to allow display:flex to apply before animation if we add one
+    }
+    
+    function closeProfileModal() {
+      document.getElementById('profileModal').style.display = 'none';
+    }
+    
+    // Attendance History Logic
+    async function openHistoryModal(e) {
+      e.preventDefault();
+      document.getElementById('profileDropdown').classList.remove('show');
+      const modal = document.getElementById('historyModal');
+      modal.style.display = 'flex';
+      
+      const tbody = document.getElementById('historyTableBody');
+      tbody.innerHTML = '<tr><td colspan="5" style="padding: 2rem; text-align: center; color: var(--text-muted);">Loading history...</td></tr>';
+      
+      try {
+        const res = await fetch('/api/my-attendance');
+        const data = await res.json();
+        
+        if (data.success && data.history.length > 0) {
+          tbody.innerHTML = data.history.map(record => {
+            const dateStr = new Date(record.work_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+            const inStr = record.punch_in_time ? new Date(record.punch_in_time).toLocaleTimeString('en-US', {hour:'2-digit', minute:'2-digit'}) : '--';
+            const outStr = record.punch_out_time ? new Date(record.punch_out_time).toLocaleTimeString('en-US', {hour:'2-digit', minute:'2-digit'}) : '--';
+            
+            let statusColor = '#94a3b8';
+            if (record.status === 'present') statusColor = '#10b981';
+            if (record.status === 'absent' || record.status === 'leave') statusColor = '#ef4444';
+            if (record.status === 'half_day' || record.status === 'pending_punchout') statusColor = '#f59e0b';
+            
+            const badge = `<span style="background: ${statusColor}20; color: ${statusColor}; padding: 0.15rem 0.5rem; border-radius: 999px; font-weight: 500; font-size: 0.75rem; display: inline-flex; align-items: center; justify-content: center; text-transform: capitalize;">${record.status.replace('_', ' ')}</span>`;
+            
+            return `
+              <tr style="border-bottom: 1px solid var(--border-light);">
+                <td style="padding: 0.75rem 1rem; color: var(--text-main); font-weight: 500;">${dateStr}</td>
+                <td style="padding: 0.75rem 1rem;">${badge}</td>
+                <td style="padding: 0.75rem 1rem; color: var(--text-secondary);">${inStr}</td>
+                <td style="padding: 0.75rem 1rem; color: var(--text-secondary);">${outStr}</td>
+                <td style="padding: 0.75rem 1rem; color: var(--text-main); font-weight: 600;">${record.hours_worked ? parseFloat(record.hours_worked).toFixed(2) : '--'}</td>
+              </tr>
+            `;
+          }).join('');
+        } else {
+          tbody.innerHTML = '<tr><td colspan="5" style="padding: 2rem; text-align: center; color: var(--text-muted);">No attendance records found.</td></tr>';
+        }
+      } catch (e) {
+        tbody.innerHTML = '<tr><td colspan="5" style="padding: 2rem; text-align: center; color: var(--brand-danger);">Failed to load data.</td></tr>';
+      }
+    }
+    
+    function closeHistoryModal() {
+      document.getElementById('historyModal').style.display = 'none';
+    }
+  </script>

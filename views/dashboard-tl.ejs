@@ -3,42 +3,35 @@
 <style>
   /* ===== ENTERPRISE MNC UI OVERRIDES ===== */
   body {
-    --ent-bg: #f9fafb;
-    --ent-card: #ffffff;
-    --ent-border: #e5e7eb;
-    --ent-text-primary: #111827;
-    --ent-text-secondary: #6b7280;
-    --ent-primary: #0f172a;
-    --ent-primary-hover: #334155;
-    --ent-success: #16a34a;
-    --ent-danger: #dc2626;
-    --ent-warning: #ea580c;
-    --ent-radius: 8px;
+    --ent-bg: var(--bg-tertiary);
+    --ent-card: var(--bg-secondary);
+    --ent-border: var(--border-light);
+    --ent-text-primary: var(--text-main);
+    --ent-text-secondary: var(--text-muted);
+    --ent-primary: var(--brand-primary);
+    --ent-primary-hover: var(--brand-hover);
+    --ent-success: #10b981;
+    --ent-danger: #ef4444;
+    --ent-warning: #f59e0b;
+    --ent-radius: var(--radius-md);
     
-    background-color: var(--ent-bg) !important;
-    color: var(--ent-text-primary) !important;
     -webkit-font-smoothing: antialiased;
   }
   
-  h1, h2, h3, h4, h5, h6 { letter-spacing: -0.01em; color: var(--ent-text-primary) !important; }
+  h1, h2, h3, h4, h5, h6 { letter-spacing: -0.01em; color: var(--ent-text-primary); margin-top: 0; }
 
-  header { background: #ffffff !important; border-bottom: 1px solid var(--ent-border) !important; box-shadow: none !important; }
-  .logo { -webkit-text-fill-color: var(--ent-text-primary) !important; color: var(--ent-text-primary) !important; }
-  .user-profile div { color: var(--ent-text-primary) !important; }
-  footer { background: #ffffff !important; border-top: 1px solid var(--ent-border) !important; color: var(--ent-text-secondary) !important; }
-
-  main.container { padding: 0 !important; margin: 0 !important; max-width: none !important; }
+  /* Removed hardcoded header/footer overrides that broke dark mode */
   
   .workspace-layout {
-    max-width: 1200px; margin: 2rem auto; padding: 0 1.5rem;
+    max-width: 1200px; margin: 0 auto; padding: 0;
   }
   @media (max-width: 900px) {
-    .workspace-layout { margin: 1rem auto; padding: 0 1rem; }
+    .workspace-layout { margin: 0 auto; padding: 0; }
   }
 
   /* Enterprise Card */
   .ent-card { background: var(--ent-card); border: 1px solid var(--ent-border); border-radius: var(--ent-radius); box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05); margin-bottom: 1.5rem; overflow: hidden; }
-  .ent-card-header { padding: 1.25rem 1.5rem; border-bottom: 1px solid var(--ent-border); display: flex; justify-content: space-between; align-items: center; background: #ffffff; }
+  .ent-card-header { padding: 1.25rem 1.5rem; border-bottom: 1px solid var(--ent-border); display: flex; justify-content: space-between; align-items: center; background: var(--ent-card); }
   .ent-card-title { font-size: 1rem; font-weight: 600; margin: 0; display: flex; flex-direction: column; }
   .ent-card-title span { font-size: 0.75rem; font-weight: 500; color: var(--ent-text-secondary); margin-top: 2px;}
   .ent-card-body { padding: 1.5rem; }
@@ -67,15 +60,15 @@
   .btn-ent-primary:hover { background: var(--ent-primary-hover); }
   .btn-ent-success { background: var(--ent-success); color: #ffffff !important; }
   .btn-ent-danger { background: var(--ent-danger); color: #ffffff !important; }
-  .btn-ent-outline { background: #ffffff; border: 1px solid #d1d5db; color: var(--ent-text-primary); }
-  .btn-ent-outline:hover { background: #f9fafb; }
+  .btn-ent-outline { background: var(--ent-card); border: 1px solid var(--ent-border); color: var(--ent-text-primary); }
+  .btn-ent-outline:hover { background: var(--bg-tertiary); }
   .btn-sm { padding: 0.25rem 0.6rem; font-size: 0.75rem; }
   .btn-full { width: 100%; }
 
   /* Forms & Inputs */
-  .ent-label { display: block; font-size: 0.875rem; font-weight: 500; color: #374151; margin-bottom: 0.375rem; }
-  .ent-input { width: 100%; padding: 0.5rem 0.75rem; border: 1px solid #d1d5db; border-radius: 6px; font-size: 0.875rem; background: #ffffff; transition: border-color 0.15s; font-family: inherit;}
-  .ent-input:focus { outline: none; border-color: #6366f1; box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1); }
+  .ent-label { display: block; font-size: 0.875rem; font-weight: 500; color: var(--ent-text-secondary); margin-bottom: 0.375rem; }
+  .ent-input { width: 100%; padding: 0.5rem 0.75rem; border: 1px solid var(--ent-border); border-radius: 6px; font-size: 0.875rem; background: var(--ent-card); color: var(--ent-text-primary); transition: border-color 0.15s; font-family: inherit;}
+  .ent-input:focus { outline: none; border-color: var(--ent-primary); box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1); }
   
   /* Badges */
   .ent-badge { display: inline-flex; align-items: center; padding: 0.125rem 0.5rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 500; }
@@ -86,16 +79,90 @@
   .badge-blue { background: #dbeafe; color: #1e40af !important; }
 
   /* Tables */
-  .ent-table-wrapper { overflow-x: auto; margin: -1.5rem; margin-top: 0; }
+  .ent-table-wrapper { overflow-x: auto; margin: 0; }
   .ent-table { width: 100%; min-width: 700px; border-collapse: collapse; text-align: left; }
-  .ent-table th { padding: 0.75rem 1.5rem; font-size: 0.75rem; font-weight: 600; color: var(--ent-text-secondary); border-bottom: 1px solid var(--ent-border); background: #f9fafb; text-transform: uppercase;}
-  .ent-table td { padding: 1rem 1.5rem; font-size: 0.875rem; border-bottom: 1px solid var(--ent-border); vertical-align: top;}
+  .ent-table th { padding: 0.75rem 1.5rem; font-size: 0.75rem; font-weight: 600; color: var(--ent-text-secondary); border-bottom: 1px solid var(--ent-border); background: var(--ent-bg); text-transform: uppercase;}
+  .ent-table td { padding: 1rem 1.5rem; font-size: 0.875rem; border-bottom: 1px solid var(--ent-border); vertical-align: top; color: var(--ent-text-primary);}
   .ent-table tr:last-child td { border-bottom: none; }
 
   /* Grids */
   .split-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 1.5rem; align-items: start; }
-  @media (max-width: 900px) { .split-grid { grid-template-columns: 1fr; } }
+  .streaks-grid { grid-template-columns: 1fr 2fr; }
   .cards-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem; }
+  
+  @media (max-width: 900px) { 
+    .split-grid { grid-template-columns: 1fr; } 
+    .streaks-grid { grid-template-columns: 1fr; }
+  }
+  
+  @media (max-width: 768px) {
+    .ent-card-header { flex-direction: column; align-items: flex-start; gap: 0.75rem; }
+    .ent-card-title { font-size: 1.1rem; }
+    .ent-card-header .btn-ent { width: 100%; }
+    .cards-grid { grid-template-columns: 1fr; }
+    .page-header h1 { font-size: 1.3rem; }
+    .ent-tabs { padding-bottom: 0.5rem; }
+    .split-grid { gap: 1rem; }
+    
+    /* Responsive Tables */
+    .ent-table { min-width: 100%; border: none; }
+    .ent-table thead { display: none; }
+    .ent-table td { 
+      padding: 1rem; 
+      display: flex; 
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+      border-bottom: 1px solid var(--ent-border); 
+      text-align: right;
+    }
+    
+    /* Always show the first two columns on mobile for attendance table (Employee and Status) */
+    .ent-table.attendance-table td {
+      display: none;
+    }
+    .ent-table.attendance-table td:nth-child(1),
+    .ent-table.attendance-table td:nth-child(2) {
+      display: flex;
+    }
+    
+    /* When expanded, show all columns */
+    .ent-table.attendance-table tr.expanded td {
+      display: flex;
+    }
+    
+    .ent-table td::before { 
+      content: attr(data-label); 
+      font-weight: 700; 
+      color: var(--ent-text-secondary); 
+      text-transform: uppercase; 
+      font-size: 0.7rem; 
+      letter-spacing: 0.05em;
+    }
+    .ent-table td:last-child { border-bottom: none; }
+    
+    .mobile-expand-icon {
+      display: block;
+      transition: transform 0.2s;
+    }
+    .ent-table.attendance-table tr.expanded .mobile-expand-icon {
+      transform: rotate(180deg);
+    }
+  }
+
+  /* Desktop Expandable overrides */
+  @media (min-width: 769px) {
+    .mobile-expand-icon { display: none; }
+  }
+  
+  .ent-table.attendance-table tr {
+    cursor: pointer;
+    transition: background-color 0.2s;
+  }
+  .ent-table.attendance-table tr:hover {
+    background-color: var(--bg-primary);
+  }
 
   /* Lists */
   .ent-list-item { display: flex; justify-content: space-between; align-items: center; padding: 0.75rem 0; border-bottom: 1px solid var(--ent-border); }
@@ -110,9 +177,9 @@
 
   /* Calendar */
   .ent-calendar { display: grid; grid-template-columns: repeat(7, 1fr); gap: 1px; background: var(--ent-border); border: 1px solid var(--ent-border); border-radius: 6px; overflow: hidden; }
-  .ent-cal-header { background: #f9fafb; padding: 0.5rem 0; text-align: center; font-size: 0.75rem; font-weight: 600; color: var(--ent-text-secondary); }
-  .ent-cal-day { background: #ffffff; aspect-ratio: 1; display: flex; align-items: center; justify-content: center; font-size: 0.875rem; font-weight: 500; color: var(--ent-text-primary); position: relative;}
-  .ent-cal-day.empty { background: #f9fafb; }
+  .ent-cal-header { background: var(--ent-bg); padding: 0.5rem 0; text-align: center; font-size: 0.75rem; font-weight: 600; color: var(--ent-text-secondary); }
+  .ent-cal-day { background: var(--ent-card); aspect-ratio: 1; display: flex; align-items: center; justify-content: center; font-size: 0.875rem; font-weight: 500; color: var(--ent-text-primary); position: relative;}
+  .ent-cal-day.empty { background: var(--ent-bg); }
   .ent-cal-day.blocked { background: #e5e7eb; color: #9ca3af !important; cursor: not-allowed; }
   .ent-cal-day.present { background: #dcfce7; color: #166534 !important; font-weight: 600;}
   .ent-cal-day.absent { background: #fee2e2; color: #991b1b !important; font-weight: 600;}
@@ -128,10 +195,6 @@
 </style>
 
 <div class="workspace-layout">
-  <div class="page-header">
-    <h1>Management Console</h1>
-    <p>Track employee streaks, monitor punches, assign tasks, and review warnings.</p>
-  </div>
 
   <% if (locals.success) { %>
     <div class="ent-alert ent-alert-success">
@@ -146,160 +209,238 @@
     </div>
   <% } %>
 
-  <nav class="ent-tabs">
-    <a href="/tl/dashboard?tab=presence" class="ent-tab <%= activeTab === 'presence' ? 'active' : '' %>">Today's Presence</a>
-    <a href="/tl/dashboard?tab=tasks" class="ent-tab <%= activeTab === 'tasks' ? 'active' : '' %>">Task Logs</a>
-    <a href="/tl/dashboard?tab=streaks" class="ent-tab <%= activeTab === 'streaks' ? 'active' : '' %>">Employee Streaks</a>
-    <a href="/tl/dashboard?tab=reminders" class="ent-tab <%= activeTab === 'reminders' ? 'active' : '' %>">Warnings & Reminders</a>
-    <a href="/tl/dashboard?tab=team" class="ent-tab <%= activeTab === 'team' ? 'active' : '' %>">Team Management</a>
-  </nav>
 
-  <!-- ================= TAB: TODAY'S PRESENCE ================= -->
+
+  <!-- ================= TAB: TODAY'S PRESENCE & DASHBOARD ================= -->
   <% if (activeTab === 'presence') { %>
-    <div class="split-grid">
-      <div>
-        <div class="ent-card">
-          <div class="ent-card-header">
-            <h2 class="ent-card-title" style="display: flex; justify-content: space-between; align-items: center;">
-              <span>Employee Monitor <span style="font-size: 0.75rem; color: var(--ent-text-secondary); font-weight: 500; margin-left: 0.5rem;">Daily logs for <%= new Date().toLocaleDateString('en-US', {month: 'short', day: 'numeric'}) %></span></span>
-              <a href="/tl/export-attendance" class="btn-ent btn-ent-outline" style="font-size: 0.75rem; padding: 0.25rem 0.75rem;">Export to Excel</a>
-            </h2>
-          </div>
-          <div class="ent-card-body">
-            <% if (activities.length === 0) { %>
-              <div style="text-align: center; color: var(--ent-text-secondary); padding: 2rem 0; font-size: 0.875rem;">No employees have punched in today.</div>
-            <% } else { %>
-              <div class="cards-grid" style="grid-template-columns: 1fr;">
-                <% activities.forEach(act => { %>
-                  <div style="border: 1px solid var(--ent-border); border-radius: 6px; padding: 1.25rem; <%= act.status === 'absent' ? 'background: #f9fafb; opacity: 0.7;' : '' %>">
-                    <div style="display: flex; justify-content: space-between; margin-bottom: 1rem; border-bottom: 1px solid var(--ent-border); padding-bottom: 0.75rem;">
-                      <div>
-                        <div style="font-weight: 600; font-size: 1rem;"><%= act.name %></div>
-                        <div style="font-size: 0.75rem; color: var(--ent-text-secondary);"><%= act.email %></div>
-                      </div>
-                      <div>
-                        <% if (act.status === 'present') { %>
-                          <span class="ent-badge badge-green">Completed</span>
-                        <% } else if (act.status === 'absent') { %>
-                          <span class="ent-badge badge-red">Absent</span>
-                        <% } else if (act.status === 'half_day') { %>
-                          <span class="ent-badge badge-amber">Half Day</span>
-                        <% } else if (act.status === 'leave') { %>
-                          <span class="ent-badge badge-red">Leave</span>
-                        <% } else { %>
-                          <span class="ent-badge badge-blue">Active Session</span>
-                        <% } %>
-                      </div>
-                    </div>
-                    
-                    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem; font-size: 0.875rem; margin-bottom: 1rem;">
-                      <div>
-                        <span style="color: var(--ent-text-secondary); display: block; font-size: 0.75rem;">Punch In</span>
-                        <%= act.punch_in_time ? new Date(act.punch_in_time).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit', timeZone: 'Asia/Kolkata'}) : 'N/A' %>
-                      </div>
-                      <div>
-                        <span style="color: var(--ent-text-secondary); display: block; font-size: 0.75rem;">Punch Out</span>
-                        <%= act.punch_out_time ? new Date(act.punch_out_time).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit', timeZone: 'Asia/Kolkata'}) : '...' %>
-                      </div>
-                      <div>
-                        <span style="color: var(--ent-text-secondary); display: block; font-size: 0.75rem;">Hours</span>
-                        <%= act.hours_worked ? parseFloat(act.hours_worked).toFixed(2) : '-' %>
-                      </div>
-                      <% if (act.punch_in_latitude) { %>
-                        <div style="grid-column: 1 / -1;">
-                          <span style="color: var(--ent-text-secondary); display: block; font-size: 0.75rem;">Location</span>
-                          <a href="https://www.openstreetmap.org/?mlat=<%= act.punch_in_latitude %>&mlon=<%= act.punch_in_longitude %>" target="_blank" style="color: var(--ent-primary); text-decoration: underline;">
-                            <%= Number(act.punch_in_latitude).toFixed(4) %>, <%= Number(act.punch_in_longitude).toFixed(4) %>
-                          </a>
-                        </div>
-                      <% } %>
-                    </div>
+    <%
+      let totalEmp = activities.length;
+      let presentCount = activities.filter(a => ['present', 'half_day', 'pending_punchout', 'needs_review'].includes(a.status)).length;
+      let absentCount = totalEmp - presentCount;
+      let totalTasks = 0;
+      let completedTasks = 0;
+      activities.forEach(act => {
+        let empTasks = employeeTasks[act.user_id] || [];
+        totalTasks += empTasks.length;
+        completedTasks += empTasks.filter(t => t.status === 'completed').length;
+      });
+      let completionRate = totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0;
+    %>
+    
+    <!-- KPI DASHBOARD -->
+    <div class="kpi-grid">
+      <div class="kpi-card">
+        <div class="kpi-header">
+          <span>Total Employees</span>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color: var(--brand-primary);"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+        </div>
+        <div class="kpi-value"><%= totalEmp %></div>
+        <div class="kpi-trend positive">Active Team Size</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-header">
+          <span>Present Today</span>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color: #10b981;"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
+        </div>
+        <div class="kpi-value"><%= presentCount %></div>
+        <div class="kpi-trend positive"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"></polyline><polyline points="16 7 22 7 22 13"></polyline></svg> <%= totalEmp > 0 ? Math.round((presentCount/totalEmp)*100) : 0 %>% Attendance</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-header">
+          <span>Absent Today</span>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color: #ef4444;"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+        </div>
+        <div class="kpi-value"><%= absentCount %></div>
+        <div class="kpi-trend negative"><%= totalEmp > 0 ? Math.round((absentCount/totalEmp)*100) : 0 %>% Absent Rate</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-header">
+          <span>Task Completion</span>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color: #8b5cf6;"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+        </div>
+        <div class="kpi-value"><%= completionRate %>%</div>
+        <div class="kpi-trend <%= completionRate > 50 ? 'positive' : 'negative' %>"><%= completedTasks %> / <%= totalTasks %> Tasks Done</div>
+      </div>
+    </div>
 
-                    <% if (act.punch_in_photo) { %>
-                      <div style="margin-bottom: 1rem;">
-                        <img src="/uploads/punches/<%= act.punch_in_photo %>" style="width: 100px; height: 100px; object-fit: cover; border-radius: 4px; border: 1px solid var(--ent-border);" alt="Punch-In">
-                      </div>
-                    <% } %>
+    <!-- ANALYTICS SECTION -->
+    <div class="ent-card" style="margin-bottom: 2rem;">
+      <div class="ent-card-header">
+        <h2 class="ent-card-title">Daily Attendance Overview</h2>
+      </div>
+      <div class="ent-card-body">
+        <div style="height: 250px; width: 100%;">
+          <canvas id="attendanceChart"></canvas>
+        </div>
+      </div>
+    </div>
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+        const ctx = document.getElementById('attendanceChart').getContext('2d');
+        new Chart(ctx, {
+          type: 'bar',
+          data: {
+            labels: ['Present', 'Absent / Not Punched In'],
+            datasets: [{
+              label: 'Employee Status',
+              data: [<%= presentCount %>, <%= absentCount %>],
+              backgroundColor: ['#10b981', '#ef4444'],
+              borderRadius: 6,
+              barThickness: 60
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: { display: false }
+            },
+            scales: {
+              y: { beginAtZero: true, ticks: { stepSize: 1 } },
+              x: { grid: { display: false } }
+            }
+          }
+        });
+      });
+    </script>
 
-                    <!-- Tasks -->
-                    <div style="font-size: 0.875rem;">
-                      <span style="color: var(--ent-text-secondary); display: block; font-size: 0.75rem; margin-bottom: 0.25rem;">Tasks Checklist</span>
-                      <% let empTasks = employeeTasks[act.user_id] || []; %>
-                      <% if (empTasks.length === 0) { %>
-                        <div style="color: var(--ent-text-secondary);">No tasks assigned.</div>
-                      <% } else { %>
-                        <div style="display: flex; flex-direction: column; gap: 0.25rem;">
-                          <% empTasks.forEach(task => { %>
-                            <div style="display: flex; align-items: center; gap: 0.5rem; color: <%= task.status === 'completed' ? 'var(--ent-text-secondary)' : 'inherit' %>; text-decoration: <%= task.status === 'completed' ? 'line-through' : 'none' %>;">
-                              <span style="color: <%= task.status === 'completed' ? 'var(--ent-success)' : 'var(--ent-danger)' %>; font-size: 1rem;">
-                                <%= task.status === 'completed' ? '✓' : '✗' %>
-                              </span>
-                              <%= task.task_description %>
-                            </div>
-                          <% }) %>
-                        </div>
-                      <% } %>
-                    </div>
-
-                    <% if (act.incomplete_reason) { %>
-                      <div style="margin-top: 1rem; padding: 0.75rem; background: #fef2f2; border-left: 2px solid var(--ent-danger); font-size: 0.875rem;">
-                        <strong style="color: var(--ent-danger); display: block; font-size: 0.75rem;">Roadblock Note</strong>
-                        <%= act.incomplete_reason %>
-                      </div>
-                    <% } %>
-                    <% if (act.admin_notes) { %>
-                      <div style="margin-top: 1rem; padding: 0.75rem; background: #f3f4f6; border-left: 2px solid var(--ent-primary); font-size: 0.875rem;">
-                        <strong style="color: var(--ent-primary); display: block; font-size: 0.75rem;">Admin Override</strong>
-                        <%= act.admin_notes %>
-                      </div>
-                    <% } %>
-
-                    <% if (act.status !== 'absent') { %>
-                      <div style="margin-top: 1.25rem; border-top: 1px solid var(--ent-border); padding-top: 1rem;">
-                        <button onclick="openOverrideModal('<%= act.attendance_id %>', '<%= act.name %>')" class="btn-ent btn-ent-outline btn-sm">
-                          Invalidate & Mark Absent
-                        </button>
-                      </div>
-                    <% } %>
-                  </div>
-                <% }) %>
-              </div>
-            <% } %>
-          </div>
+    <!-- ATTENDANCE MONITOR DATA TABLE -->
+    <div class="table-container">
+      <div class="table-header-controls">
+        <div>
+          <h2 class="ent-card-title" style="font-size: 1.125rem;">Attendance Monitor</h2>
+          <span style="font-size: 0.75rem; color: var(--text-muted);">Daily logs for <%= new Date(targetDate).toLocaleDateString('en-US', {month: 'short', day: 'numeric'}) %></span>
+        </div>
+        <div style="display: flex; gap: 0.75rem; align-items: center;">
+          <form action="/tl/dashboard" method="GET" style="display: flex; align-items: center;">
+            <input type="hidden" name="tab" value="presence">
+            <input type="date" name="date" value="<%= targetDate %>" class="ent-input" style="padding: 0.5rem 0.75rem; font-size: 0.875rem;" onchange="this.form.submit()">
+          </form>
+          <a href="/tl/export-attendance" class="btn-ent btn-ent-outline" style="display: flex; align-items: center; gap: 0.5rem;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+            Export CSV
+          </a>
         </div>
       </div>
       
-      <!-- Right Col -->
-      <div>
-        <div class="ent-card">
-          <div class="ent-card-header">
-            <h2 class="ent-card-title">Assign Tasks <span>Distribute daily assignments</span></h2>
+      <table class="ent-table attendance-table">
+        <thead>
+          <tr>
+            <th>Employee</th>
+            <th>Status</th>
+            <th>Punch In</th>
+            <th>Punch Out</th>
+            <th>Hours</th>
+            <th>Tasks</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% if (activities.length === 0) { %>
+            <tr><td colspan="7" style="text-align: center; padding: 3rem; color: var(--text-muted);">No employees found.</td></tr>
+          <% } else { %>
+            <% activities.forEach(act => { %>
+              <tr onclick="this.classList.toggle('expanded')">
+                <td data-label="Employee">
+                  <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+                    <div style="display: flex; align-items: center; gap: 0.75rem;">
+                      <div class="avatar" style="width: 32px; height: 32px; font-size: 0.85rem;"><%= act.name.charAt(0).toUpperCase() %></div>
+                      <div>
+                        <div style="font-weight: 600;"><%= act.name %></div>
+                        <div style="font-size: 0.75rem; color: var(--text-muted);"><%= act.email %></div>
+                      </div>
+                    </div>
+                    <svg class="mobile-expand-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                  </div>
+                </td>
+                <td data-label="Status">
+                  <% if (act.status === 'present') { %>
+                    <span class="status-badge status-present">Present</span>
+                  <% } else if (act.status === 'absent' || act.status === 'leave') { %>
+                    <span class="status-badge status-absent"><%= act.status === 'leave' ? 'On Leave' : 'Absent' %></span>
+                  <% } else if (act.status === 'pending_punchout') { %>
+                    <span class="status-badge status-working">Working</span>
+                  <% } else if (act.status === 'half_day') { %>
+                    <span class="status-badge status-working" style="background: #fef3c7; color: #92400e;">Half Day</span>
+                  <% } else if (act.status === 'needs_review') { %>
+                    <span class="status-badge" style="background: #fee2e2; color: #991b1b; border: 1px solid #fecaca;">0 Tasks Done - Review Needed</span>
+                  <% } else { %>
+                    <span class="status-badge" style="background: #f1f5f9; color: #64748b;">Not Punched In</span>
+                  <% } %>
+                </td>
+                <td data-label="Punch In"><%= act.punch_in_time ? new Date(act.punch_in_time).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit', timeZone: 'Asia/Kolkata'}) : '--:--' %></td>
+                <td data-label="Punch Out"><%= act.punch_out_time ? new Date(act.punch_out_time).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit', timeZone: 'Asia/Kolkata'}) : '--:--' %></td>
+                <td data-label="Hours Worked" style="font-weight: 500;"><%= act.hours_worked ? parseFloat(act.hours_worked).toFixed(1) + 'h' : '-' %></td>
+                <td data-label="Task Progress">
+                  <% let empT = employeeTasks[act.user_id] || []; %>
+                  <div style="font-size: 0.75rem; color: var(--text-muted);">
+                    <%= empT.filter(t => t.status === 'completed').length %> / <%= empT.length %> Done
+                  </div>
+                </td>
+                <td data-label="Actions">
+                  <% if (act.status !== 'absent') { %>
+                    <button onclick="openOverrideModal('<%= act.attendance_id %>', '<%= act.name %>')" class="btn-ent btn-ent-outline" style="padding: 0.25rem 0.5rem; font-size: 0.75rem;">Edit Status</button>
+                  <% } %>
+                </td>
+              </tr>
+            <% }) %>
+          <% } %>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- ENTERPRISE TASK ASSIGNMENT PANEL -->
+    <div style="margin-bottom: 1.5rem;">
+      <h2 class="ent-card-title" style="font-size: 1.25rem; margin-bottom: 1rem;">Task Assignment Panel</h2>
+      <div class="split-pane">
+        <div class="pane-sidebar">
+          <div style="padding: 1.5rem; border-bottom: 1px solid var(--border-light);">
+            <div style="font-weight: 600; font-size: 0.95rem; display: flex; justify-content: space-between; align-items: center;">
+              Select Employees
+              <span class="status-badge" style="background: var(--bg-tertiary); color: var(--text-main);"><%= interns.length %> Total</span>
+            </div>
           </div>
-          <div class="ent-card-body">
-            <form action="/tl/assign-task" method="POST">
-              <div class="ent-label">Assign To</div>
-              <div style="border: 1px solid var(--ent-border); border-radius: 6px; max-height: 200px; overflow-y: auto; padding: 0.5rem; margin-bottom: 1rem;">
-                <% if (interns.length === 0) { %>
-                  <div style="font-size: 0.875rem; color: var(--ent-text-secondary); text-align: center; padding: 1rem;">No interns available</div>
-                <% } else { %>
-                  <% interns.forEach(intern => { %>
-                    <label style="display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem; cursor: pointer;">
-                      <input type="checkbox" name="assignees[]" value="<%= intern.id %>" style="accent-color: var(--ent-primary);">
-                      <span style="font-size: 0.875rem;"><%= intern.name %></span>
-                    </label>
-                  <% }) %>
-                <% } %>
+          <form action="/tl/assign-task" method="POST" id="taskAssignForm" style="display: flex; flex-direction: column; height: 100%; overflow: hidden;">
+            <div style="flex: 1; overflow-y: auto; padding: 1rem; display: flex; flex-direction: column; gap: 0.5rem;">
+              <% if (interns.length === 0) { %>
+                <div style="font-size: 0.875rem; color: var(--text-muted); text-align: center; padding: 1rem;">No employees available</div>
+              <% } else { %>
+                <% interns.forEach(intern => { %>
+                  <label style="display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem; border: 1px solid var(--border-light); border-radius: 8px; cursor: pointer; transition: background 0.2s;">
+                    <input type="checkbox" name="assignees[]" value="<%= intern.id %>" style="accent-color: var(--brand-primary); width: 16px; height: 16px;">
+                    <div class="avatar" style="width: 24px; height: 24px; font-size: 0.65rem;"><%= intern.name.charAt(0).toUpperCase() %></div>
+                    <span style="font-size: 0.875rem; font-weight: 500;"><%= intern.name %></span>
+                  </label>
+                <% }) %>
+              <% } %>
+            </div>
+        </div>
+        <div class="pane-content">
+          <div style="display: flex; flex-direction: column; gap: 1.5rem; height: 100%;">
+            <div>
+              <div class="ent-label" style="font-size: 0.875rem; font-weight: 600; margin-bottom: 0.5rem;">Task Description</div>
+              <textarea name="task_description" class="ent-input" rows="4" required placeholder="Describe the task details clearly..." style="font-size: 0.95rem; resize: none;"></textarea>
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+              <div>
+                <div class="ent-label" style="font-size: 0.875rem; font-weight: 600; margin-bottom: 0.5rem;">Due Date</div>
+                <input type="date" name="assigned_date" class="ent-input" value="<%= new Date().toISOString().split('T')[0] %>" required>
               </div>
-
-              <div class="ent-label">Task Description</div>
-              <textarea name="task_description" class="ent-input" rows="3" required style="margin-bottom: 1rem;"></textarea>
-
-              <div class="ent-label">Target Date</div>
-              <input type="date" name="assigned_date" class="ent-input" value="<%= new Date().toISOString().split('T')[0] %>" required style="margin-bottom: 1.5rem;">
-
-              <button type="submit" class="btn-ent btn-ent-primary btn-full" <%= interns.length === 0 ? 'disabled' : '' %>>Distribute Task</button>
-            </form>
+              <div>
+                <div class="ent-label" style="font-size: 0.875rem; font-weight: 600; margin-bottom: 0.5rem;">Priority Level</div>
+                <select class="ent-input">
+                  <option value="high">High Priority</option>
+                  <option value="medium" selected>Medium Priority</option>
+                  <option value="low">Low Priority</option>
+                </select>
+              </div>
+            </div>
+            <div style="margin-top: auto; padding-top: 1.5rem; border-top: 1px solid var(--border-light); display: flex; justify-content: flex-end; gap: 1rem;">
+              <button type="button" class="btn-ent btn-ent-outline" style="padding: 0.75rem 1.5rem;">Save Draft</button>
+              <button type="submit" class="btn-ent btn-ent-primary" style="padding: 0.75rem 1.5rem; background: var(--brand-primary); color: white;" <%= interns.length === 0 ? 'disabled' : '' %>>Assign Task to Selected</button>
+            </div>
           </div>
+          </form>
         </div>
       </div>
     </div>
@@ -329,16 +470,16 @@
               <tbody>
                 <% tasksList.forEach(task => { %>
                   <tr>
-                    <td style="white-space: nowrap;"><%= new Date(task.assigned_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) %></td>
-                    <td>
+                    <td data-label="Date" style="white-space: nowrap;"><%= new Date(task.assigned_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) %></td>
+                    <td data-label="Assignee">
                       <div style="font-weight: 500;"><%= task.assignee_name %></div>
                       <div style="font-size: 0.75rem; color: var(--ent-text-secondary);"><%= task.assignee_email %></div>
                     </td>
-                    <td style="max-width: 300px;"><%= task.task_description %></td>
-                    <td>
+                    <td data-label="Task" style="max-width: 300px;"><%= task.task_description %></td>
+                    <td data-label="Status">
                       <span class="ent-badge <%= task.status === 'completed' ? 'badge-green' : 'badge-amber' %>"><%= task.status %></span>
                     </td>
-                    <td>
+                    <td data-label="Action">
                       <form action="/tl/delete-task" method="POST" onsubmit="return confirm('Delete task?');">
                         <input type="hidden" name="task_id" value="<%= task.id %>">
                         <button type="submit" class="btn-ent btn-ent-outline btn-sm" style="color: var(--ent-danger);">Delete</button>
@@ -356,7 +497,7 @@
 
   <!-- ================= TAB: EMPLOYEE STREAKS ================= -->
   <% if (activeTab === 'streaks') { %>
-    <div class="split-grid" style="grid-template-columns: 1fr 2fr;">
+    <div class="split-grid streaks-grid">
       <div>
         <div class="ent-card">
           <div class="ent-card-header"><h2 class="ent-card-title">Employees</h2></div>
@@ -382,7 +523,7 @@
             const activeIntern = interns.find(i => i.id === selectedInternId);
           %>
             <div class="ent-card-header">
-              <h2 class="ent-card-title"><%= activeIntern ? activeIntern.name : 'History' %> <span>Current Streak: <%= selectedInternStreak %> Days</span></h2>
+              <h2 class="ent-card-title"><%= activeIntern ? activeIntern.name : 'History' %></h2>
             </div>
             <div class="ent-card-body">
               <div class="ent-calendar">
@@ -465,6 +606,36 @@
         </div>
       </div>
     </div>
+    
+    <!-- Zero Task Reviews -->
+    <div class="ent-card" style="margin-bottom: 1.5rem; border-color: #fecaca;">
+      <div class="ent-card-header" style="background: #fef2f2; border-bottom-color: #fecaca;">
+        <h2 class="ent-card-title" style="color: #991b1b;">Zero Tasks Completed (Review Required) <span>Employees who punched out but logged 0 completed tasks</span></h2>
+      </div>
+      <div class="ent-card-body" style="padding: 0;">
+        <% if (zeroTaskReviews && zeroTaskReviews.length === 0) { %>
+          <div style="padding: 2rem; text-align: center; font-size: 0.875rem; color: var(--ent-success);">No reviews pending.</div>
+        <% } else if (zeroTaskReviews) { %>
+          <div class="ent-table-wrapper">
+            <table class="ent-table">
+              <thead><tr><th>Date</th><th>Employee</th><th>Punch Out Time</th><th>Action</th></tr></thead>
+              <tbody>
+                <% zeroTaskReviews.forEach(review => { %>
+                  <tr>
+                    <td data-label="Date" style="white-space: nowrap;"><%= new Date(review.work_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) %></td>
+                    <td data-label="Employee"><div style="font-weight: 500;"><%= review.name %></div></td>
+                    <td data-label="Punch Out Time"><%= new Date(review.punch_out_time).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit', timeZone: 'Asia/Kolkata'}) %></td>
+                    <td data-label="Action">
+                      <button onclick="openOverrideModal('<%= review.attendance_id %>', '<%= review.name %>')" class="btn-ent btn-ent-outline btn-sm" style="color: var(--ent-danger); border-color: #fecaca; background: #fef2f2;">Edit Status</button>
+                    </td>
+                  </tr>
+                <% }) %>
+              </tbody>
+            </table>
+          </div>
+        <% } %>
+      </div>
+    </div>
 
     <!-- Roadblocks -->
     <div class="ent-card">
@@ -479,9 +650,9 @@
               <tbody>
                 <% roadblocks.forEach(rb => { %>
                   <tr>
-                    <td style="white-space: nowrap;"><%= new Date(rb.work_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) %></td>
-                    <td><div style="font-weight: 500;"><%= rb.name %></div></td>
-                    <td style="color: var(--ent-danger);"><%= rb.incomplete_reason %></td>
+                    <td data-label="Date" style="white-space: nowrap;"><%= new Date(rb.work_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) %></td>
+                    <td data-label="Employee"><div style="font-weight: 500;"><%= rb.name %></div></td>
+                    <td data-label="Roadblock Reason" style="color: var(--ent-danger); text-align: right;"><%= rb.incomplete_reason %></td>
                   </tr>
                 <% }) %>
               </tbody>
@@ -508,11 +679,11 @@
               <tbody id="leavesTableBody">
                 <% pendingLeavesList.forEach(leave => { %>
                   <tr style="background: #fffbeb;" class="pending-leave-row" data-id="<%= leave.id %>">
-                    <td><div style="font-weight: 500;"><%= leave.employee_name %></div></td>
-                    <td style="white-space: nowrap;"><%= new Date(leave.leave_date).toLocaleDateString('en-US', {month: 'short', day: 'numeric'}) %></td>
-                    <td><%= leave.reason %></td>
-                    <td>
-                      <div style="display: flex; gap: 0.5rem;">
+                    <td data-label="Employee"><div style="font-weight: 500;"><%= leave.employee_name %></div></td>
+                    <td data-label="Date" style="white-space: nowrap;"><%= new Date(leave.leave_date).toLocaleDateString('en-US', {month: 'short', day: 'numeric'}) %></td>
+                    <td data-label="Reason" style="text-align: right;"><%= leave.reason %></td>
+                    <td data-label="Action / Status">
+                      <div style="display: flex; gap: 0.5rem; justify-content: flex-end;">
                         <form action="/tl/review-leave" method="POST"><input type="hidden" name="leave_id" value="<%= leave.id %>"><input type="hidden" name="action" value="approved"><button type="submit" class="btn-ent btn-ent-success btn-sm">Approve</button></form>
                         <form action="/tl/review-leave" method="POST"><input type="hidden" name="leave_id" value="<%= leave.id %>"><input type="hidden" name="action" value="rejected"><button type="submit" class="btn-ent btn-ent-danger btn-sm">Reject</button></form>
                       </div>
@@ -521,10 +692,10 @@
                 <% }) %>
                 <% reviewedLeavesList.forEach(leave => { %>
                   <tr>
-                    <td><div style="font-weight: 500;"><%= leave.employee_name %></div></td>
-                    <td style="white-space: nowrap;"><%= new Date(leave.leave_date).toLocaleDateString('en-US', {month: 'short', day: 'numeric'}) %></td>
-                    <td><%= leave.reason %></td>
-                    <td><span class="ent-badge <%= leave.status === 'approved' ? 'badge-green' : 'badge-red' %>"><%= leave.status %></span></td>
+                    <td data-label="Employee"><div style="font-weight: 500;"><%= leave.employee_name %></div></td>
+                    <td data-label="Date" style="white-space: nowrap;"><%= new Date(leave.leave_date).toLocaleDateString('en-US', {month: 'short', day: 'numeric'}) %></td>
+                    <td data-label="Reason" style="text-align: right;"><%= leave.reason %></td>
+                    <td data-label="Action / Status"><span class="ent-badge <%= leave.status === 'approved' ? 'badge-green' : 'badge-red' %>"><%= leave.status %></span></td>
                   </tr>
                 <% }) %>
               </tbody>
@@ -543,30 +714,46 @@
         <button onclick="openAddEmployeeModal()" class="btn-ent btn-ent-primary" style="font-size: 0.875rem; padding: 0.5rem 1rem;">+ Add New Employee</button>
       </div>
       <div class="ent-card-body" style="padding: 0;">
-        <% if (interns.length === 0) { %>
+        <% if (allEmployees.length === 0) { %>
           <div style="padding: 2rem; text-align: center; color: var(--ent-text-secondary); font-size: 0.875rem;">No employees registered yet.</div>
         <% } else { %>
           <div class="ent-table-wrapper">
             <table class="ent-table">
               <thead>
                 <tr>
+                  <th>ID</th>
                   <th>Name</th>
+                  <th>Designation</th>
                   <th>Email</th>
-                  <th>Date of Birth</th>
                   <th>Joined Date</th>
                   <th>Action</th>
                 </tr>
               </thead>
               <tbody>
-                <% interns.forEach(intern => { %>
+                <% allEmployees.forEach(emp => { %>
                   <tr>
-                    <td><div style="font-weight: 500;"><%= intern.name %></div></td>
-                    <td><%= intern.email %></td>
-                    <td><%= new Date(intern.dob).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }) %></td>
-                    <td><%= intern.onboarding_date ? new Date(intern.onboarding_date).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }) : 'N/A' %></td>
-                    <td>
+                    <td data-label="ID" style="font-family: monospace; color: var(--ent-text-secondary);"><%= emp.employee_id %></td>
+                    <td data-label="Name"><div style="font-weight: 500;"><%= emp.name %></div></td>
+                    <td data-label="Designation">
+                      <% if (emp.role === 'admin') { %>
+                        <span class="ent-badge badge-blue">Admin</span>
+                      <% } else if (emp.role === 'founder') { %>
+                        <% if (emp.name.toLowerCase().includes('vishwas')) { %>
+                          <span class="ent-badge badge-purple" style="background: #e0e7ff; color: #4338ca;">Co-Founder</span>
+                        <% } else { %>
+                          <span class="ent-badge badge-purple" style="background: #e0e7ff; color: #4f46e5;">Founder</span>
+                        <% } %>
+                      <% } else if (emp.role === 'tl') { %>
+                        <span class="ent-badge badge-amber">Team Lead</span>
+                      <% } else { %>
+                        <span class="ent-badge badge-green">Intern</span>
+                      <% } %>
+                    </td>
+                    <td data-label="Email"><%= emp.email %></td>
+                    <td data-label="Joined Date"><%= emp.onboarding_date ? new Date(emp.onboarding_date).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }) : 'N/A' %></td>
+                    <td data-label="Action">
                       <form action="/tl/remove-employee" method="POST" onsubmit="return confirm('Are you sure you want to completely remove this employee? This will also remove their tasks and attendance logs.');">
-                        <input type="hidden" name="employee_id" value="<%= intern.id %>">
+                        <input type="hidden" name="employee_id" value="<%= emp.id %>">
                         <button type="submit" class="btn-ent btn-ent-outline btn-sm" style="color: var(--ent-danger); border-color: #fecaca;">Remove</button>
                       </form>
                     </td>
@@ -615,17 +802,31 @@
     </div>
     <form action="/tl/add-employee" method="POST">
       <div class="ent-modal-body">
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+          <div>
+            <label class="ent-label">Employee ID</label>
+            <input type="text" name="employee_id" class="ent-input" placeholder="e.g. EMP-101" required>
+          </div>
+          <div>
+            <label class="ent-label">Designation</label>
+            <select name="role" class="ent-input" required>
+              <option value="intern">Intern</option>
+              <option value="tl">Team Lead</option>
+              <option value="admin">Admin</option>
+            </select>
+          </div>
+        </div>
         <div style="margin-bottom: 1rem;">
           <label class="ent-label">Full Name</label>
           <input type="text" name="name" class="ent-input" required>
         </div>
         <div style="margin-bottom: 1rem;">
           <label class="ent-label">Email Address</label>
-          <input type="email" name="email" class="ent-input" required>
+          <input type="email" name="email" class="ent-input" autocapitalize="none" autocorrect="off" required>
         </div>
         <div style="margin-bottom: 1rem;">
           <label class="ent-label">Password</label>
-          <input type="password" name="password" class="ent-input" required>
+          <input type="password" name="password" class="ent-input" autocapitalize="none" autocorrect="off" required>
         </div>
         <div style="margin-bottom: 1.5rem;">
           <label class="ent-label">Date of Birth</label>
@@ -692,11 +893,11 @@
               const d = new Date(leave.leave_date).toLocaleDateString('en-US', {month: 'short', day: 'numeric'});
               newRows += `
                 <tr style="background: #fffbeb;" class="pending-leave-row" data-id="${leave.id}">
-                  <td><div style="font-weight: 500;">${leave.employee_name}</div></td>
-                  <td style="white-space: nowrap;">${d}</td>
-                  <td>${leave.reason}</td>
-                  <td>
-                    <div style="display: flex; gap: 0.5rem;">
+                  <td data-label="Employee"><div style="font-weight: 500;">${leave.employee_name}</div></td>
+                  <td data-label="Date" style="white-space: nowrap;">${d}</td>
+                  <td data-label="Reason" style="text-align: right;">${leave.reason}</td>
+                  <td data-label="Action / Status">
+                    <div style="display: flex; gap: 0.5rem; justify-content: flex-end;">
                       <form action="/tl/review-leave" method="POST"><input type="hidden" name="leave_id" value="${leave.id}"><input type="hidden" name="action" value="approved"><button type="submit" class="btn-ent btn-ent-success btn-sm">Approve</button></form>
                       <form action="/tl/review-leave" method="POST"><input type="hidden" name="leave_id" value="${leave.id}"><input type="hidden" name="action" value="rejected"><button type="submit" class="btn-ent btn-ent-danger btn-sm">Reject</button></form>
                     </div>

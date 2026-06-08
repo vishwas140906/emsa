@@ -40,10 +40,23 @@ app.use((req, res, next) => {
 });
 
 // Authentication Middleware
-const requireAuth = (req, res, next) => {
+const requireAuth = async (req, res, next) => {
   if (!req.session.user) {
     return res.redirect('/login');
   }
+  
+  // Real-time password change validation
+  try {
+    const dbUser = await db.query('SELECT password_hash FROM users WHERE id = ?', [req.session.user.id]);
+    if (dbUser.length === 0 || dbUser[0].password_hash !== req.session.user.password_hash) {
+      return req.session.destroy(() => {
+        res.redirect('/login?error=' + encodeURIComponent('Session expired or password was changed. Please log in again.'));
+      });
+    }
+  } catch (err) {
+    console.error('Session validation error:', err);
+  }
+  
   next();
 };
 
@@ -61,11 +74,13 @@ const requireRole = (roles) => {
   };
 };
 
-// Helper: Format a Date object to local YYYY-MM-DD string
+// Helper: Format a Date object to local YYYY-MM-DD string explicitly in IST
 function formatLocalDate(date) {
-  const y = date.getFullYear();
-  const m = String(date.getMonth() + 1).padStart(2, '0');
-  const d = String(date.getDate()).padStart(2, '0');
+  const istString = date.toLocaleString('en-US', { timeZone: 'Asia/Kolkata' });
+  const istDate = new Date(istString);
+  const y = istDate.getFullYear();
+  const m = String(istDate.getMonth() + 1).padStart(2, '0');
+  const d = String(istDate.getDate()).padStart(2, '0');
   return `${y}-${m}-${d}`;
 }
 
@@ -201,12 +216,12 @@ async function getCalendarDays(userId) {
     let cellType = 'future';
     if (onboardingDateStr && cellDateStr < onboardingDateStr) {
       cellType = 'blocked';
-    } else if (dayOfWeek === 0 || dayOfWeek === 6) {
-      cellType = 'holiday'; // Weekend rest
     } else if (cellDateStr > todayStr) {
       cellType = 'future';
     } else if (record) {
       cellType = 'attendance';
+    } else if (dayOfWeek === 0 || dayOfWeek === 6) {
+      cellType = 'holiday'; // Weekend rest
     } else if (cellDateStr === todayStr) {
       cellType = 'pending_punchin'; // Not punched today yet
     } else {
@@ -242,10 +257,12 @@ app.get('/login', (req, res) => {
 });
 
 app.post('/login', async (req, res) => {
-  const { email, password } = req.body;
+  let { email, password } = req.body;
   if (!email || !password) {
     return res.render('login', { error: 'Please enter all fields.', success: null });
   }
+  email = email.toLowerCase().trim();
+  password = password.trim();
 
   try {
     const users = await db.query('SELECT * FROM users WHERE email = ?', [email]);
@@ -264,7 +281,10 @@ app.post('/login', async (req, res) => {
       id: user.id,
       name: user.name,
       email: user.email,
-      role: user.role
+      role: user.role,
+      employee_id: user.employee_id || `EMP-${user.id}`,
+      onboarding_date: user.onboarding_date,
+      password_hash: user.password_hash
     };
 
     res.redirect('/');
@@ -287,11 +307,13 @@ app.get('/reset-password', (req, res) => {
 });
 
 app.post('/reset-password', async (req, res) => {
-  const { email, dob, new_password } = req.body;
+  let { email, dob, new_password } = req.body;
   
   if (!email || !dob || !new_password) {
     return res.render('reset-password', { error: 'Please provide all details.' });
   }
+  email = email.toLowerCase().trim();
+  new_password = new_password.trim();
 
   try {
     const existing = await db.query('SELECT id FROM users WHERE email = ? AND dob = ?', [email, dob]);
@@ -467,10 +489,13 @@ app.post('/punch-out', requireAuth, requireRole(['intern']), async (req, res) =>
     const hoursWorked = (punchOutTime - punchInTime) / (1000 * 60 * 60);
     
     let finalStatus = 'present';
-    if (hoursWorked < 4) {
-      finalStatus = 'leave';
-    } else if (hoursWorked >= 4 && hoursWorked < 8) {
+    if (hoursWorked < 5) {
       finalStatus = 'half_day';
+    }
+    
+    // Automatically flag zero-task completions for TL review
+    if (completedTaskIds.length === 0) {
+      finalStatus = 'needs_review';
     }
 
     await db.query(
@@ -517,14 +542,35 @@ app.post('/apply-leave', requireAuth, requireRole(['intern']), async (req, res) 
 });
 
 
+// API: Fetch My Attendance History
+app.get('/api/my-attendance', requireAuth, async (req, res) => {
+  try {
+    const history = await db.query(
+      `SELECT work_date, punch_in_time, punch_out_time, status, hours_worked
+       FROM attendance 
+       WHERE user_id = ? 
+       ORDER BY work_date DESC 
+       LIMIT 30`,
+      [req.session.user.id]
+    );
+    res.json({ success: true, history });
+  } catch (err) {
+    console.error('API Error fetching history:', err);
+    res.status(500).json({ success: false, error: 'Failed to fetch history' });
+  }
+});
+
 // --- TL / FOUNDER DASHBOARD ---
 
-app.get('/tl/dashboard', requireAuth, requireRole(['founder', 'tl']), async (req, res) => {
+app.get('/tl/dashboard', requireAuth, requireRole(['founder', 'tl', 'admin']), async (req, res) => {
   const activeTab = req.query.tab || 'presence';
   
   try {
-    // 1. Fetch all interns (employees) for sidebar/multiselect/selectors/team tab
+    // 1. Fetch interns for the dashboard metrics, calendar, sidebar, etc.
     const interns = await db.query("SELECT id, name, email, dob, onboarding_date, created_at FROM users WHERE role = 'intern' ORDER BY name ASC");
+    
+    // 1b. Fetch ALL employees for Team Management tab
+    const allEmployees = await db.query("SELECT id, employee_id, name, email, dob, onboarding_date, role, created_at FROM users ORDER BY role ASC, name ASC");
 
     // 2. Tab-specific data fetching
     let activities = [];
@@ -536,23 +582,28 @@ app.get('/tl/dashboard', requireAuth, requireRole(['founder', 'tl']), async (req
     let missedPunches = [];
     let activeSessions = [];
     let roadblocks = [];
+    let zeroTaskReviews = [];
     let pendingLeaves = [];
+    let targetDateStr = formatLocalDate(new Date());
 
     if (activeTab === 'presence') {
+      if (req.query.date) targetDateStr = req.query.date;
       // Fetch today's presence tracker for all interns
       activities = await db.query(
         `SELECT a.id AS attendance_id, u.id AS user_id, u.name, u.email, 
                 a.punch_in_time, a.punch_in_photo, a.punch_in_latitude, a.punch_in_longitude,
-                a.punch_out_time, a.incomplete_reason, a.status, a.admin_notes
+                a.punch_out_time, a.hours_worked, a.incomplete_reason, a.status, a.admin_notes
          FROM users u
-         LEFT JOIN attendance a ON u.id = a.user_id AND a.work_date = CURRENT_DATE
+         LEFT JOIN attendance a ON u.id = a.user_id AND a.work_date = ?
          WHERE u.role = 'intern'
-         ORDER BY a.punch_in_time DESC, u.name ASC`
+         ORDER BY a.punch_in_time DESC, u.name ASC`,
+         [targetDateStr]
       );
 
       // Fetch today's assigned tasks
       const tasksToday = await db.query(
-        'SELECT id, assigned_to, task_description, status FROM tasks WHERE assigned_date = CURRENT_DATE'
+        'SELECT id, assigned_to, task_description, status FROM tasks WHERE assigned_date = ?',
+        [targetDateStr]
       );
 
       // Group tasks by employee user_id
@@ -610,6 +661,15 @@ app.get('/tl/dashboard', requireAuth, requireRole(['founder', 'tl']), async (req
          WHERE a.incomplete_reason IS NOT NULL AND a.incomplete_reason <> ''
          ORDER BY a.work_date DESC, a.punch_out_time DESC`
       );
+
+      // Fetch punches that need review (zero tasks completed)
+      zeroTaskReviews = await db.query(
+        `SELECT a.id AS attendance_id, u.name, u.email, a.punch_out_time, a.work_date 
+         FROM attendance a
+         INNER JOIN users u ON a.user_id = u.id
+         WHERE a.status = 'needs_review'
+         ORDER BY a.work_date DESC, a.punch_out_time DESC`
+      );
     }
 
     // Fetch pending leave requests for ALL tabs (shown as badge/notification)
@@ -624,6 +684,7 @@ app.get('/tl/dashboard', requireAuth, requireRole(['founder', 'tl']), async (req
 
     res.render('dashboard-tl', {
       interns,
+      allEmployees,
       activeTab,
       activities,
       employeeTasks,
@@ -634,7 +695,9 @@ app.get('/tl/dashboard', requireAuth, requireRole(['founder', 'tl']), async (req
       missedPunches,
       activeSessions,
       roadblocks,
+      zeroTaskReviews,
       pendingLeaves,
+      targetDate: targetDateStr,
       success: req.query.success || null,
       error: req.query.error || null
     });
@@ -751,24 +814,33 @@ app.post('/tl/review-leave', requireAuth, requireRole(['founder', 'tl']), async 
 
 // TL: Add Employee
 app.post('/tl/add-employee', requireAuth, requireRole(['founder', 'tl']), async (req, res) => {
-  const { name, email, password, dob, onboarding_date } = req.body;
+  let { employee_id, name, email, password, dob, onboarding_date, role } = req.body;
   
-  if (!name || !email || !password || !dob || !onboarding_date) {
+  if (!name || !email || !password || !dob || !onboarding_date || !role || !employee_id) {
     return res.redirect('/tl/dashboard?tab=team&error=' + encodeURIComponent('Please provide all employee details.'));
+  }
+  
+  email = email.toLowerCase().trim();
+  password = password.trim();
+  employee_id = employee_id.trim();
+  role = role.toLowerCase().trim();
+  
+  if (!['intern', 'tl', 'admin'].includes(role)) {
+    return res.redirect('/tl/dashboard?tab=team&error=' + encodeURIComponent('Invalid role designation.'));
   }
 
   try {
-    const existing = await db.query('SELECT id FROM users WHERE email = ?', [email]);
+    const existing = await db.query('SELECT id FROM users WHERE email = ? OR employee_id = ?', [email, employee_id]);
     if (existing.length > 0) {
-      return res.redirect('/tl/dashboard?tab=team&error=' + encodeURIComponent('Email is already registered.'));
+      return res.redirect('/tl/dashboard?tab=team&error=' + encodeURIComponent('Email or Employee ID is already registered.'));
     }
 
     const salt = await bcrypt.genSalt(10);
     const passwordHash = await bcrypt.hash(password, salt);
 
     await db.query(
-      'INSERT INTO users (name, email, password_hash, dob, onboarding_date, role) VALUES (?, ?, ?, ?, ?, ?)',
-      [name, email, passwordHash, dob, onboarding_date, 'intern']
+      'INSERT INTO users (employee_id, name, email, password_hash, dob, onboarding_date, role) VALUES (?, ?, ?, ?, ?, ?, ?)',
+      [employee_id, name, email, passwordHash, dob, onboarding_date, role]
     );
 
     res.redirect('/tl/dashboard?tab=team&success=' + encodeURIComponent('Employee successfully added.'));
@@ -873,12 +945,12 @@ cron.schedule('0 16 * * *', async () => {
     for (const user of missingPunches) {
       await db.query(
         `INSERT INTO attendance (user_id, work_date, status, admin_notes) 
-         VALUES (?, ?, 'leave', 'Auto-marked leave (No punch-in by 4:00 PM)')`,
+         VALUES (?, ?, 'absent', 'Auto-marked absent (No punch-in by 4:00 PM)')`,
         [user.id, todayStr]
       );
     }
     
-    console.log(`[Cron] Marked ${missingPunches.length} employees on leave.`);
+    console.log(`[Cron] Marked ${missingPunches.length} employees as absent.`);
   } catch (err) {
     console.error('[Cron Error]', err);
   }

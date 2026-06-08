@@ -6,7 +6,8 @@ CREATE TABLE IF NOT EXISTS users (
   password_hash VARCHAR(255) NOT NULL,
   dob DATE,
   onboarding_date DATE,
-  role VARCHAR(50) NOT NULL DEFAULT 'intern' CHECK (role IN ('founder', 'tl', 'intern')),
+  employee_id VARCHAR(50) UNIQUE,
+  role VARCHAR(50) NOT NULL DEFAULT 'intern' CHECK (role IN ('founder', 'tl', 'intern', 'admin')),
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 

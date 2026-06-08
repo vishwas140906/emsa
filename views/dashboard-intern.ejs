@@ -49,8 +49,8 @@
   
   .workspace-layout {
     max-width: 1140px;
-    margin: 2rem auto;
-    padding: 0 1.5rem;
+    margin: 0 auto;
+    padding: 0;
     display: grid;
     grid-template-columns: 2fr 1fr;
     gap: 1.5rem;
@@ -69,7 +69,7 @@
     .ent-card-header {
       flex-direction: column;
       align-items: flex-start;
-      gap: 0.5rem;
+      gap: 0.75rem;
     }
     .leave-form-grid {
       grid-template-columns: 1fr !important;
@@ -78,8 +78,15 @@
       grid-template-columns: 1fr;
     }
     .page-header h1 {
-      font-size: 1.25rem;
+      font-size: 1.3rem;
     }
+    .ent-calendar {
+      gap: 0;
+    }
+    .ent-cal-day {
+      font-size: 0.75rem;
+    }
+    .btn-ent { width: 100%; }
   }
 
   /* Enterprise Card */
@@ -296,7 +303,7 @@
   /* Stat Box */
   .stat-grid {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1fr;
     gap: 1px;
     background: var(--ent-border);
     border: 1px solid var(--ent-border);
@@ -324,10 +331,6 @@
 </style>
   
 <div class="workspace-layout">
-  <div class="page-header">
-    <h1>Dashboard</h1>
-    <p>Welcome back, <%= typeof user !== 'undefined' ? user.name : 'Employee' %>. Here is your overview for <%= new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }) %>.</p>
-  </div>
 
   <% if (success) { %>
     <div class="ent-alert ent-alert-success" style="grid-column: 1 / -1;">
@@ -507,10 +510,6 @@
     
     <!-- QUICK STATS -->
     <div class="stat-grid" style="margin-bottom: 1.5rem;">
-      <div class="stat-box">
-        <div class="stat-val"><%= currentStreak %></div>
-        <div class="stat-lbl">Day Streak</div>
-      </div>
       <div class="stat-box">
         <div class="stat-val"><%= pendingTasksCount %></div>
         <div class="stat-lbl">Pending Tasks</div>

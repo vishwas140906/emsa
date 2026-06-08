@@ -1,3 +1,9 @@
-  </main>
+  <% if (locals.user) { %>
+        </main> <!-- close .main-content -->
+      </div> <!-- close .main-wrapper -->
+    </div> <!-- close .app-layout -->
+  <% } else { %>
+    </main> <!-- close .container -->
+  <% } %>
 </body>
 </html>

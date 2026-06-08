@@ -31,6 +31,11 @@ async function getPool() {
     try {
       pool = new Pool(dbConfig);
       
+      // Catch idle client errors so they don't crash the server
+      pool.on('error', (err, client) => {
+        console.error('Unexpected error on idle pg client', err);
+      });
+      
       // Load and execute the schema script
       const schemaPath = path.join(__dirname, 'schema.sql');
       const schemaSql = fs.readFileSync(schemaPath, 'utf8');
