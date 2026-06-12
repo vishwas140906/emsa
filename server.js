@@ -1119,8 +1119,8 @@ cron.schedule('0 16 * * *', async () => {
 
 // Boot Database and Web Server
 db.getPool().then(() => {
-  app.listen(PORT, () => {
-    console.log(`EMS application server running at http://localhost:${PORT}`);
+  app.listen(PORT, '0.0.0.0', () => {
+    console.log(`EMS application server running on port ${PORT}`);
   });
 }).catch(err => {
   console.error('Fatal Database initialization failure. Stopping server start.', err);
