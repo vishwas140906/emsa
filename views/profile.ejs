@@ -135,7 +135,7 @@
             <div class="profile-subtitle">
               ID <%= user.employee_id || `EMP-${user.id}` %> &nbsp;|&nbsp; 
               <span style="text-transform: uppercase;">
-                <%= user.role === 'admin' ? 'System Administrator' : user.role === 'founder' ? (user.name.toLowerCase().includes('vishwas') ? 'Co-Founder' : 'Founder') : user.role === 'tl' ? 'Team Lead' : 'Intern' %>
+                <%= user.designation ? user.designation : (user.role === 'admin' ? 'System Administrator' : user.role === 'founder' ? (user.name.toLowerCase().includes('vishwas') ? 'Co-Founder' : 'Founder') : user.role === 'tl' ? 'Team Lead' : 'Intern') %>
               </span>
             </div>
           </div>
@@ -164,7 +164,7 @@
           <div class="profile-field">
             <span class="profile-label">Designation</span>
             <span class="profile-value" style="text-transform: uppercase;">
-              <%= user.role === 'admin' ? 'Admin' : user.role === 'founder' ? (user.name.toLowerCase().includes('vishwas') ? 'Co-Founder' : 'Founder') : user.role === 'tl' ? 'Team Lead' : 'Intern' %>
+              <%= user.designation ? user.designation : (user.role === 'admin' ? 'Admin' : user.role === 'founder' ? (user.name.toLowerCase().includes('vishwas') ? 'Co-Founder' : 'Founder') : user.role === 'tl' ? 'Team Lead' : 'Intern') %>
             </span>
           </div>
           

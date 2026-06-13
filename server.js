@@ -334,8 +334,28 @@ app.post('/reset-password', async (req, res) => {
   }
 });
 
-app.get('/profile', requireAuth, (req, res) => {
-  res.render('profile');
+app.get('/profile', requireAuth, async (req, res) => {
+  try {
+    const users = await db.query('SELECT * FROM users WHERE id = ?', [req.session.user.id]);
+    if (users.length > 0) {
+      // Update session with latest DB data for consistency
+      req.session.user = {
+        ...req.session.user,
+        designation: users[0].designation,
+        name: users[0].name,
+        email: users[0].email,
+        role: users[0].role,
+        employee_id: users[0].employee_id || `EMP-${users[0].id}`,
+      };
+      // Provide the full DB user record to the template
+      res.render('profile', { user: users[0] });
+    } else {
+      res.render('profile');
+    }
+  } catch (err) {
+    console.error('Error fetching user profile:', err);
+    res.render('profile');
+  }
 });
 
 app.get('/dashboard', requireAuth, requireRole(['intern']), async (req, res) => {
@@ -603,27 +623,37 @@ app.post('/end-break', requireAuth, requireRole(['intern']), async (req, res) =>
 
 // Employee: Apply for Leave
 app.post('/apply-leave', requireAuth, requireRole(['intern']), async (req, res) => {
-  const { leave_date, reason } = req.body;
+  const { start_date, end_date, reason } = req.body;
   const userId = req.session.user.id;
 
-  if (!leave_date || !reason || reason.trim() === '') {
-    return res.redirect('/dashboard?error=' + encodeURIComponent('Leave date and reason are required.'));
+  if (!start_date || !end_date || !reason || reason.trim() === '') {
+    return res.redirect('/dashboard?error=' + encodeURIComponent('Start and end date, and reason are required.'));
   }
 
   try {
-    // Check if already applied for that date
-    const existing = await db.query(
-      'SELECT id FROM leave_requests WHERE user_id = ? AND leave_date = ?',
-      [userId, leave_date]
-    );
-    if (existing.length > 0) {
-      return res.redirect('/dashboard?error=' + encodeURIComponent('You have already applied for leave on this date.'));
+    const start = new Date(start_date);
+    const end = new Date(end_date);
+    if (end < start) {
+      return res.redirect('/dashboard?error=' + encodeURIComponent('End date cannot be before start date.'));
     }
 
-    await db.query(
-      `INSERT INTO leave_requests (user_id, leave_date, reason, status) VALUES (?, ?, ?, 'pending')`,
-      [userId, leave_date, reason.trim()]
-    );
+    let currentDate = new Date(start);
+    while (currentDate <= end) {
+      const dateStr = formatLocalDate(currentDate);
+      
+      const existing = await db.query(
+        'SELECT id FROM leave_requests WHERE user_id = ? AND leave_date = ?',
+        [userId, dateStr]
+      );
+      if (existing.length === 0) {
+        await db.query(
+          `INSERT INTO leave_requests (user_id, leave_date, reason, status) VALUES (?, ?, ?, 'pending')`,
+          [userId, dateStr, reason.trim()]
+        );
+      }
+      
+      currentDate.setDate(currentDate.getDate() + 1);
+    }
 
     res.redirect('/dashboard?success=' + encodeURIComponent('Leave application submitted to your Team Lead for approval.'));
   } catch (err) {
@@ -663,11 +693,22 @@ app.get('/tl/dashboard', requireAuth, requireRole(['founder', 'tl', 'admin']), a
     // 1b. Fetch ALL employees for Team Management tab
     const allEmployees = await db.query("SELECT id, employee_id, name, email, phone_number, dob, onboarding_date, role, designation, created_at FROM users ORDER BY role ASC, name ASC");
 
-    // 1c. Compute Celebrations for next 30 days
+    // 1c. Compute Celebrations for next 30 days or specific month
     const today = new Date();
     today.setHours(0, 0, 0, 0);
     const in30Days = new Date(today);
     in30Days.setDate(today.getDate() + 30);
+    
+    let celebMonth = req.query.celeb_month; // e.g. "YYYY-MM"
+    let targetMonth = null;
+    let targetYear = null;
+    if (celebMonth) {
+      const parts = celebMonth.split('-');
+      if (parts.length === 2) {
+        targetYear = parseInt(parts[0], 10);
+        targetMonth = parseInt(parts[1], 10) - 1; // 0-indexed month
+      }
+    }
     
     let celebrations = [];
     allEmployees.forEach(emp => {
@@ -675,20 +716,34 @@ app.get('/tl/dashboard', requireAuth, requireRole(['founder', 'tl', 'admin']), a
       if (emp.role === 'intern' || emp.role === 'tl' || emp.role === 'admin') { 
         if (emp.dob) {
           let bday = new Date(emp.dob);
-          bday.setFullYear(today.getFullYear());
-          if (bday < today) bday.setFullYear(today.getFullYear() + 1);
-          if (bday >= today && bday <= in30Days) {
-            celebrations.push({ ...emp, event_type: 'Birthday', next_event_date: bday });
+          if (celebMonth && targetMonth !== null) {
+            if (bday.getMonth() === targetMonth) {
+              bday.setFullYear(targetYear);
+              celebrations.push({ ...emp, event_type: 'Birthday', next_event_date: bday });
+            }
+          } else {
+            bday.setFullYear(today.getFullYear());
+            if (bday < today) bday.setFullYear(today.getFullYear() + 1);
+            if (bday >= today && bday <= in30Days) {
+              celebrations.push({ ...emp, event_type: 'Birthday', next_event_date: bday });
+            }
           }
         }
         if (emp.onboarding_date) {
           let anniv = new Date(emp.onboarding_date);
           let joinedYear = anniv.getFullYear();
-          anniv.setFullYear(today.getFullYear());
-          if (anniv < today) anniv.setFullYear(today.getFullYear() + 1);
-          // Only show if it's actually an anniversary (not the year they joined)
-          if (anniv >= today && anniv <= in30Days && joinedYear !== anniv.getFullYear()) {
-            celebrations.push({ ...emp, event_type: 'Work Anniversary', next_event_date: anniv });
+          if (celebMonth && targetMonth !== null) {
+            if (anniv.getMonth() === targetMonth && joinedYear !== targetYear) {
+              anniv.setFullYear(targetYear);
+              celebrations.push({ ...emp, event_type: 'Work Anniversary', next_event_date: anniv });
+            }
+          } else {
+            anniv.setFullYear(today.getFullYear());
+            if (anniv < today) anniv.setFullYear(today.getFullYear() + 1);
+            // Only show if it's actually an anniversary (not the year they joined)
+            if (anniv >= today && anniv <= in30Days && joinedYear !== anniv.getFullYear()) {
+              celebrations.push({ ...emp, event_type: 'Work Anniversary', next_event_date: anniv });
+            }
           }
         }
       }
@@ -838,6 +893,7 @@ app.get('/tl/dashboard', requireAuth, requireRole(['founder', 'tl', 'admin']), a
       pendingLeaves,
       celebrations,
       targetDate: targetDateStr,
+      celebMonth: celebMonth || '',
       filters: {
         emp_id: req.query.emp_id || '',
         date: req.query.date || '',

@@ -791,9 +791,19 @@
 
   <!-- ================= TAB: CELEBRATIONS ================= -->
   <% if (activeTab === 'celebrations') { %>
-    <div class="page-header">
-      <h1>Celebrations 🎉</h1>
-      <p>Upcoming birthdays and work anniversaries for active employees (Next 30 days)</p>
+    <div class="page-header" style="display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 1rem;">
+      <div>
+        <h1>Celebrations 🎉</h1>
+        <p><%= celebMonth ? `Events for ${new Date(celebMonth + '-01').toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}` : 'Upcoming birthdays and work anniversaries for active employees (Next 30 days)' %></p>
+      </div>
+      <form action="/tl/dashboard" method="GET" style="display: flex; gap: 0.5rem; align-items: center;">
+        <input type="hidden" name="tab" value="celebrations">
+        <input type="month" name="celeb_month" class="ent-input" value="<%= celebMonth %>" style="padding: 0.35rem 0.5rem; font-size: 0.875rem;">
+        <button type="submit" class="btn-ent btn-ent-primary" style="padding: 0.35rem 0.75rem; font-size: 0.875rem;">Filter</button>
+        <% if(celebMonth) { %>
+          <a href="/tl/dashboard?tab=celebrations" class="btn-ent btn-ent-outline" style="padding: 0.35rem 0.75rem; font-size: 0.875rem; text-decoration:none;">Clear</a>
+        <% } %>
+      </form>
     </div>
 
     <div class="ent-card">

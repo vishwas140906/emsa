@@ -521,10 +521,14 @@
       </div>
       <div class="ent-card-body">
         <form action="/apply-leave" method="POST" style="margin-bottom: 2rem;">
-          <div class="leave-form-grid" style="display: grid; grid-template-columns: 1fr 2fr; gap: 1rem; align-items: start;">
+          <div class="leave-form-grid" style="display: grid; grid-template-columns: 1fr 1fr 2fr; gap: 1rem; align-items: start;">
             <div>
-              <label class="ent-label">Date of Leave</label>
-              <input type="date" name="leave_date" class="ent-input" required min="<%= new Date().toISOString().split('T')[0] %>">
+              <label class="ent-label">Start Date</label>
+              <input type="date" name="start_date" id="leave_start" class="ent-input" required min="<%= new Date().toISOString().split('T')[0] %>" onchange="document.getElementById('leave_end').min = this.value; if(!document.getElementById('leave_end').value) document.getElementById('leave_end').value = this.value;">
+            </div>
+            <div>
+              <label class="ent-label">End Date</label>
+              <input type="date" name="end_date" id="leave_end" class="ent-input" required min="<%= new Date().toISOString().split('T')[0] %>">
             </div>
             <div>
               <label class="ent-label">Reason</label>
