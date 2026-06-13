@@ -1127,11 +1127,10 @@ app.get('/health', (req, res) => {
   res.send('OK');
 });
 
-// Commenting out the blocking database initialization for diagnostics
-// db.getPool().then(() => {
-app.listen(PORT, '0.0.0.0', () => {
-  console.log(`EMS application server running on port ${PORT}`);
+db.getPool().then(() => {
+  app.listen(PORT, '0.0.0.0', () => {
+    console.log(`EMS application server running on port ${PORT}`);
+  });
+}).catch(err => {
+  console.error('Fatal Database initialization failure. Stopping server start.', err);
 });
-// }).catch(err => {
-//   console.error('Fatal Database initialization failure. Stopping server start.', err);
-// });
