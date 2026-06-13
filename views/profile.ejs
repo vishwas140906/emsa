@@ -1,0 +1,187 @@
+<%- include('partials/header') %>
+
+<style>
+  .profile-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0;
+  }
+  
+  .profile-banner {
+    background-color: #e6f0fa;
+    /* Dotted pattern background */
+    background-image: radial-gradient(#cbd5e1 1px, transparent 1px);
+    background-size: 12px 12px;
+    border: 1px solid #bfdbfe;
+    border-radius: 8px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .profile-banner-left {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+  }
+  
+  .profile-avatar-large {
+    width: 80px;
+    height: 80px;
+    background-color: #ffffff;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.5rem;
+    font-weight: 600;
+    color: #2563eb;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  }
+  
+  .profile-name-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #0f172a;
+    margin-bottom: 0.25rem;
+    text-transform: uppercase;
+  }
+  
+  .profile-subtitle {
+    font-size: 0.9rem;
+    color: #475569;
+    font-weight: 500;
+  }
+  
+  .profile-section-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #0f172a;
+    margin-bottom: 1rem;
+  }
+  
+  .profile-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+  }
+  
+  .profile-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+  }
+  
+  .profile-card-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #0f172a;
+  }
+  
+  .profile-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 2rem;
+  }
+  
+  @media (max-width: 900px) {
+    .profile-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+  
+  @media (max-width: 600px) {
+    .profile-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+  
+  .profile-field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  
+  .profile-label {
+    font-size: 0.8rem;
+    color: #64748b;
+    font-weight: 500;
+  }
+  
+  .profile-value {
+    font-size: 0.95rem;
+    color: #0f172a;
+    font-weight: 600;
+  }
+</style>
+
+<div class="workspace-layout">
+  <div class="main-column" style="grid-column: 1 / -1;">
+    <div class="profile-container">
+      
+      <!-- Banner Section -->
+      <div class="profile-banner">
+        <div class="profile-banner-left">
+          <div class="profile-avatar-large">
+            <%= user.name.charAt(0).toUpperCase() %>
+          </div>
+          <div>
+            <div class="profile-name-title"><%= user.name %></div>
+            <div class="profile-subtitle">
+              ID <%= user.employee_id || `EMP-${user.id}` %> &nbsp;|&nbsp; 
+              <span style="text-transform: uppercase;">
+                <%= user.role === 'admin' ? 'System Administrator' : user.role === 'founder' ? (user.name.toLowerCase().includes('vishwas') ? 'Co-Founder' : 'Founder') : user.role === 'tl' ? 'Team Lead' : 'Intern' %>
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <h2 class="profile-section-title">Profile</h2>
+
+      <!-- Profile Information Card -->
+      <div class="profile-card">
+        <div class="profile-card-header">
+          <div class="profile-card-title">Profile Information</div>
+        </div>
+        
+        <div class="profile-grid">
+          <div class="profile-field">
+            <span class="profile-label">Name</span>
+            <span class="profile-value" style="text-transform: uppercase;"><%= user.name %></span>
+          </div>
+          
+          <div class="profile-field">
+            <span class="profile-label">ID</span>
+            <span class="profile-value"><%= user.employee_id || `EMP-${user.id}` %></span>
+          </div>
+          
+          <div class="profile-field">
+            <span class="profile-label">Designation</span>
+            <span class="profile-value" style="text-transform: uppercase;">
+              <%= user.role === 'admin' ? 'Admin' : user.role === 'founder' ? (user.name.toLowerCase().includes('vishwas') ? 'Co-Founder' : 'Founder') : user.role === 'tl' ? 'Team Lead' : 'Intern' %>
+            </span>
+          </div>
+          
+          <div class="profile-field">
+            <span class="profile-label">Email Address</span>
+            <span class="profile-value"><%= user.email %></span>
+          </div>
+
+          <div class="profile-field">
+            <span class="profile-label">Joined Date</span>
+            <span class="profile-value"><%= user.onboarding_date ? new Date(user.onboarding_date).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }) : 'N/A' %></span>
+          </div>
+        </div>
+      </div>
+      
+    </div>
+  </div>
+</div>
+
+<%- include('partials/footer') %>

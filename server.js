@@ -334,6 +334,9 @@ app.post('/reset-password', async (req, res) => {
   }
 });
 
+app.get('/profile', requireAuth, (req, res) => {
+  res.render('profile');
+});
 
 app.get('/dashboard', requireAuth, requireRole(['intern']), async (req, res) => {
   const userId = req.session.user.id;
@@ -1118,10 +1121,17 @@ cron.schedule('0 16 * * *', async () => {
 });
 
 // Boot Database and Web Server
-db.getPool().then(() => {
-  app.listen(PORT, () => {
-    console.log(`EMS application server running at http://localhost:${PORT}`);
-  });
-}).catch(err => {
-  console.error('Fatal Database initialization failure. Stopping server start.', err);
+console.log("PORT ENV =", process.env.PORT);
+
+app.get('/health', (req, res) => {
+  res.send('OK');
 });
+
+// Commenting out the blocking database initialization for diagnostics
+// db.getPool().then(() => {
+app.listen(PORT, '0.0.0.0', () => {
+  console.log(`EMS application server running on port ${PORT}`);
+});
+// }).catch(err => {
+//   console.error('Fatal Database initialization failure. Stopping server start.', err);
+// });
